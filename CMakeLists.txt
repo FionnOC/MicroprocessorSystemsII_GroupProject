@@ -24,3 +24,4 @@ add_compile_options(-Wall
 add_subdirectory(assignments)
 add_subdirectory(examples)
 add_subdirectory(labs)
+add_subdirectory(tools/picoprobe)

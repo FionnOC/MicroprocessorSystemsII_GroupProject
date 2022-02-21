@@ -19,8 +19,12 @@
             "visibility": "default"
         }
     },
+    "cmake.generator": "Ninja",
+    "cmake.configureOnOpen": true,
     "cmake.buildBeforeRun": true,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cortex-debug.openocdPath": "C:\\Users\\markj\\OneDrive\\Desktop\\Year 3 Semester 2\\3D2 Microprocessor Systems II\\labs\\pico-apps\\tools\\openocd\\openocd.exe",
+    "cortex-debug.enableTelemetry": false,
     "cortex-debug.registerUseNaturalFormat": false,
     "files.associations": {
         "*.S": "arm",
