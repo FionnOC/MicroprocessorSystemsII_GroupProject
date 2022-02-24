@@ -38,11 +38,13 @@ End of assembler dump.
 
 What is the entry point address (in hex) of the blink_asm application?
 
-xPSR: 0x01000000 pc: 0x0000012a msp: 0x20041f00
+entry point for blink_asm: 0x00000352
 
 What is the entry point address (in hex) of the “main_asm” function?
 
-pc: 0x10000354 msp: 0x20041ff8
+pc: 0x10000354
 
 Describe each of the differences between the assembly that was written for the main_asm function and the version that was executed according to GDB.
 
+The differences between the assembly for the main_asm function and the version executed according to gdb are that the registers are now
+numerical rather than variable names and that some addresses in memory are shown.
