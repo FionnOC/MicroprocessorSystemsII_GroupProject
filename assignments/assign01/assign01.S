@@ -34,8 +34,8 @@
 
 @ Entry point to the ASM portion of the program
 main_asm:
-        //ldr     r0, =msg
-        //bl      printf
+        ldr     r0, =msg
+        bl      printf
         movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
         bl      asm_gpio_init               @ Call the subroutine to initialise the GPIO pin specified by r0
         movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
