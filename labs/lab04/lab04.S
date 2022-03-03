@@ -41,7 +41,6 @@ led_set_state:
     bl      asm_gpio_put                @ Update the the value of the LED GPIO pin (based on value in r1)
     pop     {pc}                        @ Pop the link register from the stack to the program counter
 
-
 @ Set data alignment
 .data
     .align 4
