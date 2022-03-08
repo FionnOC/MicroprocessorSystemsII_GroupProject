@@ -102,20 +102,43 @@ led_set_state:
 //
 set_alarm:
     // Enable alarm timer interrupts using the (TIMER_BASE + TIMER_INTE_OFFSET) register
+    ldr     r2, =(TIMER_BASE)
+    @mov     r1, #1
+    str     r1, [r2, #TIMER_INTE_OFFSET]
+
+    ldr     r1, [r2, #TIMER_TIMELR_OFFSET]
+    add     r1, r0
+    str     r1, [r2, #TIMER_ALARM0_OFFSET]
+
     // Get the current timer count from (TIMER_BASE + TIMER_TIMELR_OFFSET) register
     // Add the time delay you want to wait for to the current timer count
     // Push the updated value to (TIMER_BASE + TIMER_ALARM0_OFFSET)
     // Exit subroutine
-
+    bx      lr
 //
 // Sets up the alrm_isr in the RAM vector table and enables the correct interrupt
 //
 install_alrm_isr:
     // Get the address of the RAM vector table using the (PPB_BASE + M0PLUS_VTOR_OFFSET) register
+    ldr     r2, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
+    ldr     r1, [r2]
+    movs    r2, #ALRM_ISR_OFFSET
+    add     r2, r1
     // Store the address of the alrm_isr handler to the correct offset for ALARM0 in the vector table
+    ldr     r0, =alrm_isr
+    str     r0, [r2]
     // Disable the ALARM0 IRQ by writing the correct value to (PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET)
+    @mov     r0, #1
+    ldr     r2, =(PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET)
+    add     r1, r2
+    str     r0, [r1]
+
     // Enable the ALARM0 IRQ by writing the correct value to (PPB_BASE + M0PLUS_NVIC_ISER_OFFSET)
+    ldr     r2, =(PPB_BASE + M0PLUS_NVIC_ISER_OFFSET)
+    add     r1, r2
+    str     r0, [r1]
     // Exit subroutine
+    bx      lr
 
 //
 // Service the pending interrupt from the ALARM0 TIMER
@@ -130,11 +153,24 @@ alrm_isr:
 //
 install_gpio_isr:
     // Get the address of the RAM vector table using the (PPB_BASE + M0PLUS_VTOR_OFFSET) register
+    ldr     r2, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
+    ldr     r1, [r2]
+    movs    r2, #GPIO_ISR_OFFSET
+    add     r2, r1
     // Store the address of the gpio_isr handler to the correct offset for GPIO in the vector table
+    ldr     r0, =gpio_isr
+    str     r0, [r2]
     // Disable the GPIO IRQ by writing the correct value to (PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET)
+    @mov     r0, #1
+    ldr     r2, =(PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET)
+    add     r1, r2
+    str     r0, [r1]
     // Enable the GPIO IRQ by writing the correct value to (PPB_BASE + M0PLUS_NVIC_ISER_OFFSET)
+    ldr     r2, =(PPB_BASE + M0PLUS_NVIC_ISER_OFFSET)
+    add     r1, r2
+    str     r0, [r1]
     // Exit subroutine
-
+    bx      lr
 //
 // Service the pending interrupt from the GPIO
 //
