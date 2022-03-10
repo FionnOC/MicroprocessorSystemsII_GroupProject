@@ -176,7 +176,7 @@ install_gpio_isr:
     str     r0, [r2]                                    @ store the value of the interrupt into the address at r2
     // Disable the GPIO IRQ by writing the correct value to (PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET)
     ldr     r2, =(PPB_BASE + M0PLUS_NVIC_ICPR_OFFSET)   @ ICPR method to disable
-    ldr     r1, =0x2000                                 @ load the 2 to the power of 13 value to r1
+    ldr     r1, =0x2000                                 @ load the 2 to the power of 13 value to r1 -- since the offset at the start is int #13
     str     r1, [r2]                                    @ store the value of this into the address at r2 -- this should disable the GPIO IRQ
     // Enable the GPIO IRQ by writing the correct value to (PPB_BASE + M0PLUS_NVIC_ISER_OFFSET)
     ldr     r2, =(PPB_BASE + M0PLUS_NVIC_ISER_OFFSET)   @ ISER method to enable
