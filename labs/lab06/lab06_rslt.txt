@@ -1,0 +1,20 @@
+Single time: 377745
+Double time: 768925
+Total sequential time: 1146899
+Single-precision time when using both cores: 254499
+Double-precision time when using both cores: 768903
+Total parallel time: 1023469
+
+The results above were the results received when I ran my code using a friend's
+Pi. On my own Pi, I received the results below when I ran the code:
+
+Single time: 377745
+Double time: 768925
+Total sequential time: 1146899
+Single-precision time when using both cores: 377726
+Double-precision time when using both cores: 768903
+Total parallel time: 1146706
+
+This could potenitally be due to a faulty core on the Pi. I tried running my
+code multiple times on my Pi and kept getting values very close to the ones
+just mentioned, despite it running perfectly on a friend's Pi.
