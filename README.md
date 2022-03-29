@@ -3,6 +3,13 @@
 We are aiming to build a game to teach the gamer Morse Code. 
 Morse code is a method used in telecommunication to encode text characters as standardised sequences of two different signal durations, called dots and dashes. 
 
+Roles:
+        Project Workflow Owner: David O'Leary
+        GitLab Workflow Owner: Neha Nath
+        Project Documentation Owner: Fionn O'Connor
+        Project Demonstration Owner: Dylan O'Maoldomhnaigh
+        Project Code Owner: Fergal Riordan
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
