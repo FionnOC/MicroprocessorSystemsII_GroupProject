@@ -40,7 +40,7 @@ void asm_gpio_set_irq_rise(uint pin) {
 int main() {
     stdio_init_all();// Initialise all basic IO
     printf("+---------------------------------------------+\n");
-    printf("|          Assignment 2 Lab Group XX          |\n");
+    printf("|          Assignment 2 Lab Group 20          |\n");
     printf("+---------------------------------------------+\n");
     printf("|   *       *******    *    ******  *     *   |\n");
     printf("|   *       *         * *   *     * **    *   |\n");
