@@ -1,0 +1,23 @@
+Cache turned on
+Single time: 377744
+Double time: 768925
+Total sequential time with caches enabled: 1146866
+
+Cache turned off
+Single time: 3701130
+Double time: 4408907
+Total sequential time with caches disabled: 8111401
+
+Cache turned on
+Single time: 377727
+Double time: 768901
+Total parallel time with caches enabled: 1146703
+
+Cache turned off
+Single time: 3701130
+Double time: 4408908
+Total parallel time with caches disabled: 8111428
+
+The times are much longer when the cache is disabled compared to when it's enabled. The sequential time with the
+cache disabled is slightly faster than the parallel time with the cache disabled. On the other hand, with the cache
+enabled, the sequential time is slightly longer than the parallel time.

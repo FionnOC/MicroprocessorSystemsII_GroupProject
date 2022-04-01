@@ -9,6 +9,6 @@ target_link_libraries(assign02 PRIVATE pico_stdlib)
 
 # Create map/bin/hex file etc.
 pico_add_extra_outputs(assign02)
-
+pico_enable_stdio_uart(assign02 1)
 # Add the URL via pico_set_program_url.
 apps_auto_set_url(assign02)
