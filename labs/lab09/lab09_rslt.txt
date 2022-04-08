@@ -1,0 +1,24 @@
+Temperature readings:
+
+Raw hex value: 382
+Converted floating point value: 0.723486
+Temperature: 16.839451
+
+Raw hex value: 383
+Converted floating point value: 0.724292
+Temperature: 16.371307
+
+Raw hex value: 37d
+Converted floating point value: 0.719458
+Temperature: 19.180138
+
+Raw hex value: 37a
+Converted floating point value: 0.717041
+Temperature: 20.584536
+
+
+Workings are shown in lab09.c, but to recap:
+1. The temperature is read from the sensor using adc_read()
+2. The voltage is calculated by multiplying it by the conversion_factor of 3.3f / (1 << 12)
+3. The temperature is calculated with the formula temp = 27 - (voltage - 0.706) / 0.001721 (reasons for values in lab09.c)
+4. <10 degs = blue LED, >10 && <=20 = yellow LED, >20 = red LED
