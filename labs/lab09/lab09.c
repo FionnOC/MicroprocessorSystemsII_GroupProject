@@ -4,7 +4,7 @@
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
-#include "ws2812.pio.h"
+#include "lab09.pio.h"
 //must include the hardware for ADC and GPIO
 #include "hardware/adc.h"
 #include "hardware/gpio.h"

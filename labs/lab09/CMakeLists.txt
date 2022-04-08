@@ -5,7 +5,7 @@ add_executable(lab09)
 target_sources(lab09 PRIVATE lab09.c lab09.S)
 
 # Generate the PIO header file from the PIO source file.
-pico_generate_pio_header(lab09 ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
+pico_generate_pio_header(lab09 ${CMAKE_CURRENT_LIST_DIR}/lab09.pio)
 
 # Pull in commonly used features.
 target_link_libraries(lab09 PRIVATE pico_stdlib hardware_pio hardware_adc)
