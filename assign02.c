@@ -36,13 +36,8 @@ void asm_gpio_put(uint pin, bool value) {
 }
 
 // Enable falling-edge interrupt – see SDK for detail on gpio_set_irq_enabled()
-void asm_gpio_set_irq_fall(uint pin) {
-    gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_FALL, true);
-}
-
-// Enable rising-edge interrupt – see SDK for detail on gpio_set_irq_enabled()
-void asm_gpio_set_irq_rise(uint pin) {
-    gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_RISE, true);
+void asm_gpio_set_irq(uint pin) {
+    gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true);
 }
 
 // wrapper function to push 32-bit RGB colour value out to LED serially
@@ -78,9 +73,6 @@ void levelChooser(int index) {
 int main() {
     stdio_init_all();// Initialise all basic IO
 
-    gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
-    gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
-
     printf("+---------------------------------------------+\n");
     printf("|          Assignment 2 Lab Group 20          |\n");
     printf("+---------------------------------------------+\n");
@@ -111,7 +103,7 @@ int main() {
     uint offset = pio_add_program(pio, &ws2812_program);
     ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
     // Set the color to blue at half intensity
-    put_pixel(urgb_u32(0x00, 0x00, 0x7F));
+    put_pixel(urgb_u32(0x00, 0x00, 0xF));
 
     main_asm();
     return(0);
