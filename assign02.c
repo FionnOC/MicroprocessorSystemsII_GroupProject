@@ -62,14 +62,21 @@ void levelChooser(int index) {
     char inp = letters[index];
     // level 1
     if(inp == '1') {
+        // level chosen so set LED to green
+        put_pixel(urgb_u32(0x32, 0xCD, 0x32));
         printf("Level 1 starting...\n\n");
     }
     // level 2
     else if(inp == '2') {
+        // level chosen so set LED to green
+        put_pixel(urgb_u32(0x32, 0xCD, 0x32));
         printf("Level 2 starting...\n\n");
     }
     else {
         printf("Incorrect morse sequence entered... Please retry!\n\n");
+        printf("Level 1 = .----\n");
+        printf("Level 2 = ..---\n");
+        printf("User Input: ");
     }
 }
 /*
@@ -78,6 +85,7 @@ void levelChooser(int index) {
 int main() {
     stdio_init_all();// Initialise all basic IO
 
+    // initialise the button for falling edge and rising edge design
     gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
     gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
 
@@ -114,5 +122,5 @@ int main() {
     put_pixel(urgb_u32(0x00, 0x00, 0x7F));
 
     main_asm();
-    return(0);
+    return 0;
 }
