@@ -40,6 +40,17 @@ void asm_gpio_set_irq(uint pin) {
     gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true);
 }
 
+absolute_time_t start_time;
+void start_timer(){
+    start_time = get_absolute_time();
+}
+
+int end_timer(){
+    int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
+    printf("%d\n", time_diff);
+    return time_diff/100000;
+}
+
 // wrapper function to push 32-bit RGB colour value out to LED serially
 static inline void put_pixel(uint32_t pixel_grb) {
     pio_sm_put_blocking(pio0, 0, pixel_grb << 8u);
