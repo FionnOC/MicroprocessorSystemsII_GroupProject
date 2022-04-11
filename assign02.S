@@ -79,12 +79,11 @@
 main_asm:
     bl      init_leds
     bl      init_btn                                @ initialise the button
-    bl      get_time
     bl      install_alrm_isr                        @ method to install the alarm isr
     bl      install_gpio_isr                        @ method to install the spio isr
     ldr     r4, =DFLT_ALARM_TIME                    @ load the default alarm time into the r4 register
     bl      set_alarm                               @ Set a new alarm
-    // Enable alarm timer interrupts using the (TIMER_BASE + TIMER_INTE_OFFSET) register
+// Enable alarm timer interrupts using the (TIMER_BASE + TIMER_INTE_OFFSET) register
     ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)   @ load the value of (TIMER_BASE + TIMER_INTE_OFFSET) into r2
     movs    r1, #1                                  @ move 1 to r1
     str     r1, [r2]                                @ store the value of r1 to the address at r2
@@ -92,10 +91,6 @@ main_asm:
 main_loop:
     wfi                         @ wait for an interrupt
     b       main_loop           @ Infinite loop 
-
-get_time:
-    ldr     r2, =TIMER_BASE
-    ldr     r1, [r2, #TIMER_TIMELR_OFFSET]
 
 init_leds:
     push    {lr}
