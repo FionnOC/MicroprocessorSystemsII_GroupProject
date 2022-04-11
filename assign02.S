@@ -14,7 +14,7 @@
 .equ    DASH,           0b10    @ dash is 10  
 .equ    SPACE,          0b11    @ space is 11
 
-.equ    DASH_TIME,      1              
+.equ    DASH_TIME,      250000              
 .equ    SPACE_TIME,     1000000         @ if more than 1 second, this is a space
 .equ    SEQ_DONE,       2000000         @ if more than 2 seconds assume the sequence is done
 

@@ -48,7 +48,7 @@ void start_timer(){
 int end_timer(){
     int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
     printf("%d\n", time_diff);
-    return time_diff/100000;
+    return time_diff;
 }
 
 // wrapper function to push 32-bit RGB colour value out to LED serially
