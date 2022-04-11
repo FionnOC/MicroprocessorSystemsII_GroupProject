@@ -77,7 +77,6 @@
 
 @ Entry point to the ASM portion of the program
 main_asm:
-    bl      init_leds
     bl      init_btn                                @ initialise the button
     bl      install_alrm_isr                        @ method to install the alarm isr
     bl      install_gpio_isr                        @ method to install the spio isr
@@ -92,15 +91,6 @@ main_loop:
     wfi                         @ wait for an interrupt
     b       main_loop           @ Infinite loop 
 
-init_leds:
-    push    {lr}
-    movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
-    bl      asm_gpio_init              @ Call the subroutine to initialise the GPIO pin specified by r0
-    movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
-    movs    r1, #GPIO_DIR_OUT          @ We want this GPIO pin to be setup as an output pin
-    bl      asm_gpio_set_dir           @ Call the subroutine to set the GPIO pin specified by r0 to state specified by r1
-    pop     {pc}
-
 init_btn:
 //code goes here to initialise the button 
     push    {lr}
@@ -112,7 +102,7 @@ init_btn:
     movs    r0, GPIO_DIR_IN
     bl      asm_gpio_set_dir 
     movs    r0, #GPIO_BTN_EN
-    bl      asm_gpio_set_irq_fall
+    bl      asm_gpio_set_irq
     pop     {pc}
 
 set_alarm:
@@ -127,6 +117,19 @@ set_alarm:
     // Push the updated value to (TIMER_BASE + TIMER_ALARM0_OFFSET)
     // Exit subroutine
     bx      lr
+
+dotdash:
+    // get time of falling and rising edges
+
+    // compare them - if difference > .25s dash
+
+    //else dot
+
+
+
+
+
+
 
 // Sets up the alrm_isr in the RAM vector table and enables the correct interrupt
 install_alrm_isr:
@@ -204,55 +207,47 @@ install_gpio_isr:
 
 // Service the pending interrupt from the GPIO
 gpio_isr:
-    // Read the interrupt status event from the (IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET) register
     push    {lr}
-    ldr     r2, =(IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET)      @ read the interrupt status
-    ldr     r1, [r2]                                                @ store the value of the interrupt status event that was read into r2 in r1
-    ldr     r0, =0x2000                                             @ load 8192 (0x2000) into r0
-    str     r0, [r2]                                                @ store the value of 8192 into r2
-     // Detect which button was pressed by comparing to GPIO_BTN_DN_MSK, GPIO_BTN_EN_MSK and GPIO_BTN_UP_MSK
-    ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)                   @ get the current state of the LED - is it on or off?
-    ldr     r0, [r2]                                                @ load the 0x2000 into r0
-  
-    ldr     r2, =GPIO_BTN_DN_MSK                                    @ load the DN_MSK into r2
-    cmp     r2, r1
-    bne     end
+    
+    ldr     r2, =(IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET)  @ Load the memory address that we want to read from to r2
+    ldr     r1, [r2]                                            @ Load the interrupt status into r1
 
-    ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)            @ write the value from IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET to r2
-    ldr     r1, =0x400000                                           @ load 0x400000 into r1 (to match the mask from before)
-    str     r1, [r2]                                                @ store this value in the memory of r2
-    ldr     r2, =DFLT_STATE_STOP                                    @ load 0 into r2 (stop flashing)
-    cmp     r0, r2                                                  @ compare with the value in r0
-    bne     skip                                                    @ if flashing then branch to skip
+    ldr     r0, =GPIO_BTN_DN_MSK                                @ Load the mask for a falling-edge button event into r0
+    cmp     r1, r0                                              @ Check if this is equal to the interrupt status
+    beq     falling_edge                                        @ If it is, jump to the subroutine that handles falling-edge events
 
-    ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)                   @ enable the alarm interrupt again
-    movs    r1, #1                                                  @ move #1 to r1
-    str     r1, [r2]                                                @ store the value of r1 in r2
-    ldr     r0, =message                                            @ print the message msg2 to the console
-    bl      printf                                                  @ branch to printf
-    bl      end                                                     @ branch to end
+    ldr     r2, =(IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET)  @ Load the memory address that we want to read from to r2
+    ldr     r1, [r2]                                            @ Load the interrupt status into r1
+    
+    ldr     r0, =GPIO_BTN_UP_MSK                                @ Load the mask for a rising-edge button event into r0
+    cmp     r1, r0                                              @ Check if this is equal to the interrupt status
+    beq     rising_edge                                         @ If it is, jump to the subroutine that handles rising-edge events
 
-// skip method for if the LED is flashing
-skip:
-    ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)               @ load (TIMER_BASE + TIMER_INTE_OFFSET) into r2
-    movs    r1, #0                                              @ move 0 into r1
-    str     r1, [r2]                                            @ store the value of r1 into r2
-    ldr     r0, =msg2
-    bl      printf
-    bl      end
+falling_edge:
+    ldr     r0, =falling_edge_msg                                
+    bl      printf                                              @ Print falling-edge message    
+    ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
+    ldr     r0, =GPIO_BTN_DN_MSK                                @ Load the enable button mask into r0
+    //call timestamp function 
+    str     r0, [r2]                                            @ Push this value to the raw interrupts register to disable the pending interrupt from GPIO
+    b       finish
 
-// Exit ISR
-// branches back to set_alarm
-end:
-    bl set_alarm            @ go back to set_alarm
-    pop {pc}
+rising_edge:
+    ldr     r0, =rising_edge_msg
+    bl      printf                                              @ Print rising-edge message
+    ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
+    ldr     r0, =GPIO_BTN_UP_MSK                                @ Load the enable button mask into r0
+    // call timestamp function
+    // subtract two timestamps
+    str     r0, [r2]                                            @ Push this value to the raw interrupts register to disable the pending interrupt from GPIO
+    b       finish
+
+finish:
+    pop     {pc}                                                @ Exit the interrupt handler
+
 
 @ Set data alignment
 .data
     .align 4
-    printdot:           .asciz "."
-    printdash:          .asciz "-"
-    message:            .asciz "LED is flashing"
-    msg2:               .asciz "LED is not flashing"
-    timedifference:     .word 0  
-    seq:                .word 0
+    falling_edge_msg:   .asciz "Button pressed.\n"
+    rising_edge_msg:    .asciz "Button released.\n"
