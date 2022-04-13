@@ -43,7 +43,10 @@ void asm_gpio_set_irq(uint pin) {
     gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true);
 }
 
+void levelChooser(int input);
+
 int morse_buffer = 1;
+int level_flag = 0;
 
 void morse (int input){
     if (input == 0){
@@ -55,128 +58,18 @@ void morse (int input){
         morse_buffer = (morse_buffer * 10) + 1;
     }
     else if (input == 2){
-        printf("Input being checked...\n");
+        if (level_flag == 0){
+            levelChooser(morse_buffer);
+        }
         if (morse_buffer == 1001){
-            printf(". . -");
+            printf(". . -\n");
             morse_buffer = 1;
         }
     }
     else printf("Error.\n");
 }
 
-void morse_encoder(int b) {
-    if(b == 0110) {
-        printf("A .-");
-    }
-    if(b == 10010101) {
-        printf("B -...");
-    }
-    if(b == 10011001) {
-        printf("C -.-.");
-    }
-    if(b == 100101) {
-        printf("D -..");
-    }
-    if(b == 01) {
-        printf("E .");
-    }
-    if(b == 01011001) {
-        printf("F ..-.");
-    }
-    if(b == 101001) {
-        printf("G --.");
-    }
-    if(b == 01010101) {
-        printf("H ....");
-    }
-    if(b == 0101) {
-        printf("I ..");
-    }
-    if(b == 01101010) {
-        printf("J .---");
-    }
-    if(b == 100110) {
-        printf("K -.-");
-    }
-    if(b == 01100101) {
-        printf("L .-..");
-    }
-    if(b == 0110) {
-        printf("M --");
-    }
-    if(b == 1001) {
-        printf("N -.");
-    }
-    if(b == 101010) {
-        printf("O ---");
-    }
-    if(b == 01101001) {
-        printf("P .--.");
-    }
-    if(b == 10100110) {
-        printf("Q --.-");
-    }
-    if(b == 011001) {
-        printf("R .-.");
-    }
-    if(b == 010101) {
-        printf("S ...");
-    }
-    if(b == 10) {
-        printf("T -");
-    }
-    if(b == 010110) {
-        printf("U ..-");
-    }
-    if(b == 01010110) {
-        printf("V ...-");
-    }
-    if(b == 011010) {
-        printf("W .--");
-    }
-    if(b == 10010110) {
-        printf("X -..-");
-    }
-    if(b == 10011010) {
-        printf("Y -.--");
-    }
-    if(b == 10100101) {
-        printf("Z --..");
-    }
-    if(b == 1010101010) {
-        printf("0 -----");
-    }
-    if(b == 0110101010) {
-        printf("1 .----");
-    }
-    if(b == 0101101010) {
-        printf("2 ..---");
-    }
-    if(b == 0101011010) {
-        printf("3 ...--");
-    }
-    if(b == 0101010110) {
-        printf("4 ....-");
-    }
-    if(b == 0101010101) {
-        printf("5 .....");
-    }
-    if(b == 1001010101) {
-        printf("6 -....");
-    }
-    if(b == 1010010101) {
-        printf("7 --...");
-    }
-    if(b == 1010100101) {
-        printf("8 ---..");
-    }
-    if(b == 1010101001) {
-        printf("9 ----.");
-    }
-    else {
-        printf("?");
-    }
-}
+
 // wrapper function to push 32-bit RGB colour value out to LED serially
 static inline void put_pixel(uint32_t pixel_grb) {
     pio_sm_put_blocking(pio0, 0, pixel_grb << 8u);
@@ -201,29 +94,6 @@ int end_timer(){
     return time_diff;
 }
 
-// function to display which level has been chosen
-void levelChooser(int index) {
-    char inp = letters[index];
-    // level 1
-    if(inp == '1') {
-        // level chosen so set LED to green
-        put_pixel(urgb_u32(0x32, 0xCD, 0x32));
-        printf("Level 1 starting...\n\n");
-    }
-    // level 2
-    else if(inp == '2') {
-        // level chosen so set LED to green
-        put_pixel(urgb_u32(0x32, 0xCD, 0x32));
-        printf("Level 2 starting...\n\n");
-    }
-    else {
-        printf("Incorrect morse sequence entered... Please retry!\n\n");
-        printf("Level 1 = .----\n");
-        printf("Level 2 = ..---\n");
-        printf("User Input: ");
-    }
-}
-
 void life_indicator (int lives) {
     if (lives == 3){
         put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
@@ -239,6 +109,30 @@ void life_indicator (int lives) {
     }
     else put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
 }
+
+// function to display which level has been chosen
+void levelChooser(int input) {
+    //char inp = letters[index];
+    // level 1
+    if(input == 101111) {
+        // level chosen so set LED to green
+        put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
+        printf("Level 1 starting...\n\n");
+    }
+    // level 2
+    else if(input == 100111) {
+        // level chosen so set LED to green
+        put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
+        printf("Level 2 starting...\n\n");
+    }
+    else {
+        printf("Incorrect morse sequence entered... Please retry!\n\n");
+        printf("Level 1 = .----\n");
+        printf("Level 2 = ..---\n");
+        printf("User Input: ");
+    }
+}
+
 /*
  * Main entry point for the code - simply calls the main assembly function.
  */
