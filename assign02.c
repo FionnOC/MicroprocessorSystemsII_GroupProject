@@ -6,14 +6,36 @@
 #include "hardware/clocks.h"
 #include "assign02.pio.h"
 #include "hardware/watchdog.h"
+#include <time.h>
 
 #define IS_RGBW true        // Will use RGBW format
 #define NUM_PIXELS 1        // There is 1 WS2812 device in the chain
 #define WS2812_PIN 28       // The GPIO pin that the WS2812 connected to
 
-char letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '?'};
+char morse_letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
+                        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
+                        'Y', 'Z', '1', '2', '3', '4', '5', '6', 
+                        '7', '8', '9', '0', '?'};
+int morse_encoder[] = {501, 5100, 51010, 5100, 50, 50010, 5110, // A-G
+                        50000, 500, 50111, 5101, 50100, 511, 510, // H-N
+                        5111, 50110, 51101, 5010, 5000, 51, 5001, // O-U
+                        50001, 5011, 51001, 51011, 51100, 501111, // V-1
+                        500111, 500011, 500001, 500000, 510000, // 2-6
+                        511000, 511100, 511110, 511111}; // 7-0
+char* morsetable[] = {
+    // Letters A-Z (indices 0-25)
+    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....",
+    "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.",
+    "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
+    "-.--", "--..", 
+    // Digits start here (indices 26-35)
+    ".----", "..--", "...--", "....-", "....",
+    "-...", "--...", "---..", "----.", "-----"
+};
 
 int lives = 3;
+int int_maker = 5;
 
 // Must declare the main assembly entry point before use.
 void main_asm();
@@ -43,119 +65,6 @@ void asm_gpio_set_irq(uint pin) {
     gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true);
 }
 
-void morse_encoder(int b) {
-    if(b == 0110) {
-        printf("A .-");
-    }
-    if(b == 10010101) {
-        printf("B -...");
-    }
-    if(b == 10011001) {
-        printf("C -.-.");
-    }
-    if(b == 100101) {
-        printf("D -..");
-    }
-    if(b == 01) {
-        printf("E .");
-    }
-    if(b == 01011001) {
-        printf("F ..-.");
-    }
-    if(b == 101001) {
-        printf("G --.");
-    }
-    if(b == 01010101) {
-        printf("H ....");
-    }
-    if(b == 0101) {
-        printf("I ..");
-    }
-    if(b == 01101010) {
-        printf("J .---");
-    }
-    if(b == 100110) {
-        printf("K -.-");
-    }
-    if(b == 01100101) {
-        printf("L .-..");
-    }
-    if(b == 0110) {
-        printf("M --");
-    }
-    if(b == 1001) {
-        printf("N -.");
-    }
-    if(b == 101010) {
-        printf("O ---");
-    }
-    if(b == 01101001) {
-        printf("P .--.");
-    }
-    if(b == 10100110) {
-        printf("Q --.-");
-    }
-    if(b == 011001) {
-        printf("R .-.");
-    }
-    if(b == 010101) {
-        printf("S ...");
-    }
-    if(b == 10) {
-        printf("T -");
-    }
-    if(b == 010110) {
-        printf("U ..-");
-    }
-    if(b == 01010110) {
-        printf("V ...-");
-    }
-    if(b == 011010) {
-        printf("W .--");
-    }
-    if(b == 10010110) {
-        printf("X -..-");
-    }
-    if(b == 10011010) {
-        printf("Y -.--");
-    }
-    if(b == 10100101) {
-        printf("Z --..");
-    }
-    if(b == 1010101010) {
-        printf("0 -----");
-    }
-    if(b == 0110101010) {
-        printf("1 .----");
-    }
-    if(b == 0101101010) {
-        printf("2 ..---");
-    }
-    if(b == 0101011010) {
-        printf("3 ...--");
-    }
-    if(b == 0101010110) {
-        printf("4 ....-");
-    }
-    if(b == 0101010101) {
-        printf("5 .....");
-    }
-    if(b == 1001010101) {
-        printf("6 -....");
-    }
-    if(b == 1010010101) {
-        printf("7 --...");
-    }
-    if(b == 1010100101) {
-        printf("8 ---..");
-    }
-    if(b == 1010101001) {
-        printf("9 ----.");
-    }
-    else {
-        printf("?");
-    }
-}
 // wrapper function to push 32-bit RGB colour value out to LED serially
 static inline void put_pixel(uint32_t pixel_grb) {
     pio_sm_put_blocking(pio0, 0, pixel_grb << 8u);
@@ -176,66 +85,18 @@ void start_timer(){
 int end_timer(){
     int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
     printf("%d\n", time_diff);
-    watchdog_update();
+    if (time_diff > 250000) {
+        int_maker = int_maker * 10;
+        int_maker++;
+    }
+    else {
+        int_maker = 10*int_maker;
+    }
+    //watchdog_update();
     return time_diff;
 }
 
-// function to display which level has been chosen
-void levelChooser(int index) {
-    char inp = letters[index];
-    // level 1
-    if(inp == '1') {
-        // level chosen so set LED to green
-        put_pixel(urgb_u32(0x32, 0xCD, 0x32));
-        printf("Level 1 starting...\n\n");
-    }
-    // level 2
-    else if(inp == '2') {
-        // level chosen so set LED to green
-        put_pixel(urgb_u32(0x32, 0xCD, 0x32));
-        printf("Level 2 starting...\n\n");
-    }
-    else {
-        printf("Incorrect morse sequence entered... Please retry!\n\n");
-        printf("Level 1 = .----\n");
-        printf("Level 2 = ..---\n");
-        printf("User Input: ");
-    }
-}
-
-void life_indicator (int lives) {
-    if (lives == 3){
-        put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
-    }
-    else if (lives == 2){
-        put_pixel(urgb_u32(0x2F, 0x2F, 0x00)); // yellow
-    }
-    else if (lives == 1){
-        put_pixel(urgb_u32(0x2F, 0xC, 0x00)); // orange
-    }
-    else if (lives == 0){
-        put_pixel(urgb_u32(0x2F, 0x00, 0x00)); // red
-    }
-    else put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
-}
-/*
- * Main entry point for the code - simply calls the main assembly function.
- */
-int main() {
-    stdio_init_all();// Initialise all basic IO
-
-    if (watchdog_caused_reboot()) {
-            printf("Rebooted by Watchdog!\n");
-            return 0;
-        } else {
-            printf("Clean boot\n");
-        }
-
-    watchdog_enable(9000, 1);
-    // initialise the button for falling edge and rising edge design
-    //gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
-    //gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
-
+void welcomeScreen() {
     printf("+---------------------------------------------+\n");
     printf("|          Assignment 2 Lab Group 20          |\n");
     printf("+---------------------------------------------+\n");
@@ -257,9 +118,115 @@ int main() {
     printf("+---------------------------------------------+\n");
     printf("|   Enter Sequence on GP21 to choose Level    |\n");
     printf("|                                             |\n");
-    printf("|   ""-----""  - Level #1 - CHARS (EASY)          |\n");
-    printf("|   "".----""  - Level #2 - CHARS (HARD)          |\n");
+    printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
+    printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
+    printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
+    printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
     printf("+---------------------------------------------+\n");
+}
+
+// function to display which level has been chosen
+int levelChooser() {
+    printf("Level code: \n");
+    while (int_maker <= 501111) {
+        if (int_maker == 501111) {
+            printf("%i", int_maker);
+            return 1;
+        }
+        else if (int_maker == 500111) {
+            printf("%i", int_maker);
+            return 2;
+        }
+        else if (int_maker == 500011) {
+            printf("%i", int_maker);
+            return 3;
+        }
+        else if (int_maker == 500001) {
+            printf("%i", int_maker);
+            return 4;
+        }
+    }
+    printf("This is not a valid level, please retry...\n");
+    return 100;
+}
+
+void life_indicator (int lives) {
+    if (lives == 3) {
+        put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
+    }
+    else if (lives == 2) {
+        put_pixel(urgb_u32(0x2F, 0x2F, 0x00)); // yellow
+    }
+    else if (lives == 1) {
+        put_pixel(urgb_u32(0x2F, 0xC, 0x00)); // orange
+    }
+    else if (lives == 0) {
+        put_pixel(urgb_u32(0x2F, 0x00, 0x00)); // red
+    }
+    else put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
+}
+
+// function play the game based on what level is chosen
+void play(int level, int counter) {
+    int value = (rand() % 36);
+
+    if(level == 1) {
+        int_maker = 5;
+        // need to update the morse values to have the letters and binary equivs in separate arrays
+        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+
+        while(int_maker <= morse_encoder[value] && counter != 5) {
+            if(int_maker == morse_encoder[value]) {
+                printf("That is correct! Good job!\n");
+                counter++;
+                return;
+            }
+        }
+        printf("That is incorrect :(\n");
+        counter = 0;
+        lives--;
+    }
+}
+
+// function to start the game
+void start_game(int level) {
+    // set the LED to green and initialise a counter
+    put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
+    int counter = 0;
+    
+    // while lives have not run out and a 'win' (counter=5) has not been achieved
+    while(lives != 0 && counter < 5) {
+        // start game at the correct level
+        play(level, counter);
+        // set the LED
+        life_indicator(lives);
+    }
+}
+ 
+ 
+/*
+ * Main entry point for the code - simply calls the main assembly function.
+ */
+int main() {
+    
+    // srand(time(NULL)) goes at start of main to allow for rand() to be used properly
+    srand(time(NULL));
+    stdio_init_all();// Initialise all basic IO
+
+    /*if (watchdog_caused_reboot()) {
+            printf("Rebooted by Watchdog!\n");
+            return 0;
+        } else {
+            printf("Clean boot\n");
+        }
+
+    watchdog_enable(8000000, 1);*/
+    // initialise the button for falling edge and rising edge design
+    // gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
+    // gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
+
+    // display the welcome screen
+    welcomeScreen();
 
     // Initialise the PIO interface with the WS2812 code
     PIO pio = pio0;
@@ -267,7 +234,30 @@ int main() {
     ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
     put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
 
-
     main_asm();
+
+    // choosing a level
+    int level = 0;
+    while(level == 0) {
+        while ((level < 1 || level > 4) && level != 100) {
+            level = levelChooser();
+        }
+        if(level != 100) {
+            printf("\nYou have selected Level %d.\n\n", level);
+        }
+        else {
+            printf("|   Enter Sequence on GP21 to choose Level    |\n");
+            printf("|                                             |\n");
+            printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
+            printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
+            printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
+            printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
+            level = 0;
+        }
+    }
+    start_game(level);
+    if(lives == 0) {
+        printf("GAME OVER!!! Better luck next time!\n\n");
+    }
     return 0;
 }
