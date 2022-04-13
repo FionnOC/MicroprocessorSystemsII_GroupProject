@@ -14,7 +14,7 @@
 .equ    DASH,           0b10    @ dash is 10  
 .equ    SPACE,          0b11    @ space is 11
 
-.equ    DASH_TIME,      250000          @ a press for longer than 0.25 secs can be considered a dash
+.equ    DASH_TIME,      250000              
 .equ    SPACE_TIME,     1000000         @ if more than 1 second, this is a space
 .equ    SEQ_DONE,       2000000         @ if more than 2 seconds assume the sequence is done
 
@@ -238,12 +238,25 @@ falling_edge:
 rising_edge:
     ldr     r0, =rising_edge_msg
     bl      printf                                              @ Print rising-edge message
-    // GET TIME & STORE IN R6
-    // BRANCH TO DOT_DASH SUBROUTINE
-    bl      end_timer
+
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
     ldr     r0, =GPIO_BTN_UP_MSK                                @ Load the enable button mask into r0
     str     r0, [r2]                                            @ Push this value to the raw interrupts register to disable the pending interrupt from GPIO
+    
+    bl      end_timer
+    
+    ldr     r1, =DASH_TIME
+    cmp     r0, r1
+    bgt     dash
+
+dot:
+    ldr     r0, =dot_msg
+    bl      printf
+    b       finish
+
+dash:
+    ldr     r0, =dash_msg
+    bl      printf
     b       finish
 
 finish:
@@ -255,3 +268,5 @@ finish:
     .align 4
     falling_edge_msg:   .asciz "Button pressed.\n"
     rising_edge_msg:    .asciz "Button released.\n"
+    dash_msg:           .asciz "Dash.\n"
+    dot_msg:            .asciz "Dot.\n"
