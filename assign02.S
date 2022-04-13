@@ -14,7 +14,10 @@
 .equ    DASH,           0b10    @ dash is 10  
 .equ    SPACE,          0b11    @ space is 11
 
-.equ    DASH_TIME,      250000              
+.equ    DFLT_STRING_WORD, 0b00000000 
+
+
+.equ    DASH_TIME,      200000              
 .equ    SPACE_TIME,     1000000         @ if more than 1 second, this is a space
 .equ    SEQ_DONE,       2000000         @ if more than 2 seconds assume the sequence is done
 
@@ -38,42 +41,6 @@
 .equ    GPIO_ISR_OFFSET, 0x74         @ GPIO is int #13 (vector table entry 29)
 .equ    ALRM_ISR_OFFSET, 0x40         @ ALARM0 is int #0 (vector table entry 16)
 @ write binary equivalents of each letter and number based on dot/dash combo
-.equ    A,          0b0110                              
-.equ    B,          0b10010101
-.equ    C,          0b10011001
-.equ    D,          0b100101
-.equ    E,          0b01
-.equ    F,          0b01011001
-.equ    G,          0101001                              
-.equ    H,          0b01010101
-.equ    I,          0b01101010
-.equ    J,          0b01101010
-.equ    K,          0b100110
-.equ    L,          0b01100101
-.equ    M,          0b1010                          
-.equ    N,          0b1001
-.equ    O,          0b101010
-.equ    P,          0b01101001
-.equ    Q,          0b10100110
-.equ    R,          0b011001
-.equ    S,          0b010101                              
-.equ    T,          0b10
-.equ    U,          0b010110
-.equ    V,          0b01010110
-.equ    W,          0b011010
-.equ    X,  	    0b10010110
-.equ    Y,          0b10011010                          
-.equ    Z,          0b10100101
-.equ    ZERO,       0b1010101010
-.equ    ONE,        0b0110101010
-.equ    TWO,        0b0101101010
-.equ    THREE,      0b0101011010
-.equ    FOUR,       0b0101010110                        
-.equ    FIVE,       0b0101010101
-.equ    SIX,        0b1001010101
-.equ    SEVEN,      0b1010010101
-.equ    EIGHT,      0b1010100101
-.equ    NINE,       0b1010101001
 
 @ Entry point to the ASM portion of the program
 main_asm:
@@ -96,6 +63,7 @@ main_loop:
 get_time:
     ldr     r2, =TIMER_BASE
     ldr     r1, [r2, #TIMER_TIMELR_OFFSET]
+
 
 init_leds:
     push    {lr}
@@ -164,18 +132,14 @@ alrm_isr:
     ldr     r1, =(TIMER_BASE + TIMER_INTR_OFFSET)
     movs    r0, #1
     str     r0, [r1]
-    movs    r0, #GPIO_LED_PIN         @ Set the pushbutton pin number to r0 for use by asm_gpio_get
-    bl      asm_gpio_get              @ Get current the value of the LED GPIO pin (returns to r0)
-    cmp     r0, #LED_VAL_OFF          @ Check if the LED GPIO pin value is "off"
-    beq     led_set_on                @ If it is "off" then then jump code to to turn it on
-led_set_off:
-    movs    r1, #LED_VAL_OFF          @ The LED is currently "on" so we want to turn it "off"
-    b       led_set_state             @ Jump to portion of code where we set the state of the LED
-led_set_on:
-    movs    r1, #LED_VAL_ON           @ The LED is currently "off" so we want to turn it "on"
-led_set_state:
-    movs    r0, #GPIO_LED_PIN         @ Set the LED GPIO pin number to r0 for use by asm_gpio_put
-    bl      asm_gpio_put              @ Update the the value of the LED GPIO pin (based on value in r1)
+            
+    //to pass word off to c
+    ldr     r2, =string_entered
+    ldr     r0, [r2]
+    movs    r0, #1
+    bl      morse_encoder
+    
+
     bl      set_alarm
     // Disable pending interrupt from TIMER by writing correct value to (TIMER_BASE + TIMER_INTR_OFFSET)
     ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)
@@ -260,13 +224,15 @@ dash:
     b       finish
 
 finish:
+    bl set_alarm
     pop     {pc}                                                @ Exit the interrupt handler
 
 
 @ Set data alignment
 .data
     .align 4
+    string_entered:     .word   DFLT_STRING_WORD 
     falling_edge_msg:   .asciz "Button pressed.\n"
     rising_edge_msg:    .asciz "Button released.\n"
-    dash_msg:           .asciz "Dash.\n"
-    dot_msg:            .asciz "Dot.\n"
+    dash_msg:           .asciz "Dash -\n"
+    dot_msg:            .asciz "Dot .\n"
