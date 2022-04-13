@@ -43,6 +43,27 @@ void asm_gpio_set_irq(uint pin) {
     gpio_set_irq_enabled(pin, GPIO_IRQ_EDGE_FALL|GPIO_IRQ_EDGE_RISE, true);
 }
 
+int morse_buffer = 1;
+
+void morse (int input){
+    if (input == 0){
+        printf("Dot .\n");
+        morse_buffer = morse_buffer * 10;
+    }
+    else if (input == 1){
+        printf("Dash -\n");
+        morse_buffer = (morse_buffer * 10) + 1;
+    }
+    else if (input == 2){
+        printf("Input being checked...\n");
+        if (morse_buffer == 1001){
+            printf(". . -");
+            morse_buffer = 1;
+        }
+    }
+    else printf("Error.\n");
+}
+
 void morse_encoder(int b) {
     if(b == 0110) {
         printf("A .-");

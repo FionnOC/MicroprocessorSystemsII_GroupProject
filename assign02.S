@@ -14,7 +14,7 @@
 .equ    DASH,           0b10    @ dash is 10  
 .equ    SPACE,          0b11    @ space is 11
 
-.equ    DFLT_STRING_WORD, 0b00000000 
+.equ    DFLT_STRING_WORD, 0b00000000  
 
 
 .equ    DASH_TIME,      200000              
@@ -24,7 +24,7 @@
 // from assignment 1
 .equ    DFLT_STATE_STRT, 1            @ Specify the value to start flashing
 .equ    DFLT_STATE_STOP, 0            @ Specify the value to stop flashing
-.equ    DFLT_ALARM_TIME, 1000000        @ Specify the default alarm timeout
+.equ    DFLT_ALARM_TIME, 2000000        @ Specify the default alarm timeout
 .equ    GPIO_BTN_EN,  21                @ Specify pin for the GP21 button
 .equ    GPIO_DIR_IN,   0                @ Specify input direction for a GPIO pin
 .equ    GPIO_DIR_OUT,  1                @ Specify output direction for a GPIO pin
@@ -44,7 +44,6 @@
 
 @ Entry point to the ASM portion of the program
 main_asm:
-    bl      init_leds
     bl      init_btn                                @ initialise the button
     bl      get_time
     bl      install_alrm_isr                        @ method to install the alarm isr
@@ -64,15 +63,6 @@ get_time:
     ldr     r2, =TIMER_BASE
     ldr     r1, [r2, #TIMER_TIMELR_OFFSET]
 
-
-init_leds:
-    push    {lr}
-    movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
-    bl      asm_gpio_init              @ Call the subroutine to initialise the GPIO pin specified by r0
-    movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
-    movs    r1, #GPIO_DIR_OUT          @ We want this GPIO pin to be setup as an output pin
-    bl      asm_gpio_set_dir           @ Call the subroutine to set the GPIO pin specified by r0 to state specified by r1
-    pop     {pc}
 
 init_btn:
 //code goes here to initialise the button 
@@ -133,11 +123,13 @@ alrm_isr:
     movs    r0, #1
     str     r0, [r1]
             
+    movs    r0, #2
+    bl      morse        
     //to pass word off to c
-    ldr     r2, =string_entered
-    ldr     r0, [r2]
-    movs    r0, #1
-    bl      morse_encoder
+    //ldr     r2, =string_entered
+    //ldr     r0, [r2]
+    //movs    r0, #1
+    //bl      morse_encoder
     
 
     bl      set_alarm
@@ -214,13 +206,17 @@ rising_edge:
     bgt     dash
 
 dot:
-    ldr     r0, =dot_msg
-    bl      printf
+    //ldr     r0, =dot_msg
+    //bl      printf
+    movs    r0, #0
+    bl      morse
     b       finish
 
 dash:
-    ldr     r0, =dash_msg
-    bl      printf
+    //ldr     r0, =dash_msg
+    //bl      printf   
+    movs    r0, #1 
+    bl      morse
     b       finish
 
 finish:
