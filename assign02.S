@@ -40,10 +40,10 @@
 // from assignment 1
 .equ    GPIO_ISR_OFFSET, 0x74         @ GPIO is int #13 (vector table entry 29)
 .equ    ALRM_ISR_OFFSET, 0x40         @ ALARM0 is int #0 (vector table entry 16)
-@ write binary equivalents of each letter and number based on dot/dash combo
 
 @ Entry point to the ASM portion of the program
 main_asm:
+    push    {lr}
     bl      init_leds
     bl      init_btn                                @ initialise the button
     bl      get_time
@@ -55,10 +55,11 @@ main_asm:
     ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)   @ load the value of (TIMER_BASE + TIMER_INTE_OFFSET) into r2
     movs    r1, #1                                  @ move 1 to r1
     str     r1, [r2]                                @ store the value of r1 to the address at r2
-
+    pop     {pc}
 main_loop:
     wfi                         @ wait for an interrupt
-    b       main_loop           @ Infinite loop 
+    //b       main_loop           @ Infinite loop 
+
 
 get_time:
     ldr     r2, =TIMER_BASE
@@ -137,7 +138,7 @@ alrm_isr:
     ldr     r2, =string_entered
     ldr     r0, [r2]
     movs    r0, #1
-    bl      morse_encoder
+    //bl      morse_encoder
     
 
     bl      set_alarm
@@ -216,12 +217,16 @@ rising_edge:
 dot:
     ldr     r0, =dot_msg
     bl      printf
+    movs    r0, #0
     b       finish
+
 
 dash:
     ldr     r0, =dash_msg
     bl      printf
+    movs    r0, #1 
     b       finish
+
 
 finish:
     bl set_alarm
@@ -234,5 +239,5 @@ finish:
     string_entered:     .word   DFLT_STRING_WORD 
     falling_edge_msg:   .asciz "Button pressed.\n"
     rising_edge_msg:    .asciz "Button released.\n"
-    dash_msg:           .asciz "Dash -\n"
-    dot_msg:            .asciz "Dot .\n"
+    dash_msg:           .asciz "-\n"
+    dot_msg:            .asciz ".\n"
