@@ -48,7 +48,7 @@ void start_timer(){
 int end_timer(){
     int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
     printf("%d\n", time_diff);
-    return time_diff/100000;
+    return time_diff;
 }
 
 // wrapper function to push 32-bit RGB colour value out to LED serially
@@ -77,6 +77,22 @@ void levelChooser(int index) {
     else {
         printf("Incorrect morse sequence entered... Please retry!\n\n");
     }
+}
+
+void life_indicator (int lives) {
+    if (lives == 3){
+        put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
+    }
+    else if (lives == 2){
+        put_pixel(urgb_u32(0x2F, 0x2F, 0x00)); // yellow
+    }
+    else if (lives == 1){
+        put_pixel(urgb_u32(0x2F, 0xC, 0x00)); // orange
+    }
+    else if (lives == 0){
+        put_pixel(urgb_u32(0x2F, 0x00, 0x00)); // red
+    }
+    else put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
 }
 /*
  * Main entry point for the code - simply calls the main assembly function.
@@ -113,8 +129,8 @@ int main() {
     PIO pio = pio0;
     uint offset = pio_add_program(pio, &ws2812_program);
     ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
-    // Set the color to blue at half intensity
-    put_pixel(urgb_u32(0x00, 0x00, 0xF));
+    put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
+
 
     main_asm();
     return(0);
