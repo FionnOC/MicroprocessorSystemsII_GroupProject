@@ -5,6 +5,7 @@
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "assign02.pio.h"
+#include "hardware/watchdog.h"
 
 #define IS_RGBW true        // Will use RGBW format
 #define NUM_PIXELS 1        // There is 1 WS2812 device in the chain
@@ -175,6 +176,7 @@ void start_timer(){
 int end_timer(){
     int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
     printf("%d\n", time_diff);
+    watchdog_update();
     return time_diff;
 }
 
@@ -222,9 +224,17 @@ void life_indicator (int lives) {
 int main() {
     stdio_init_all();// Initialise all basic IO
 
+    if (watchdog_caused_reboot()) {
+            printf("Rebooted by Watchdog!\n");
+            return 0;
+        } else {
+            printf("Clean boot\n");
+        }
+
+    watchdog_enable(9000, 1);
     // initialise the button for falling edge and rising edge design
-    gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
-    gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
+    //gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
+    //gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
 
     printf("+---------------------------------------------+\n");
     printf("|          Assignment 2 Lab Group 20          |\n");
