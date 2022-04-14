@@ -89,7 +89,6 @@ void start_timer(){
 
 int end_timer(){
     int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
-    printf("%d\n", time_diff);
     if (time_diff > 250000) {
         int_maker = int_maker * 10;
         int_maker++;
@@ -97,11 +96,12 @@ int end_timer(){
     else {
         int_maker = 10*int_maker;
     }
-    //watchdog_update();
     return time_diff;
 }
 
 void welcomeScreen() {
+    // make the welcome screen blue
+    printf("\033[1;34m");
     printf("+---------------------------------------------+\n");
     printf("|          Assignment 2 Lab Group 20          |\n");
     printf("+---------------------------------------------+\n");
@@ -121,6 +121,10 @@ void welcomeScreen() {
     printf("|   *     * *     * *    *  *     * *         |\n");
     printf("|   *     * ******* *     *  *****  *******   |\n");
     printf("+---------------------------------------------+\n");
+    printf("|  To play the game, enter a morse sequence   |\n");
+    printf("|  based on the character or word prompted.   |\n");
+    printf("|                                             |\n");
+    printf("|                                             |\n");
     printf("|   Enter Sequence on GP21 to choose Level    |\n");
     printf("|                                             |\n");
     printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
@@ -128,26 +132,23 @@ void welcomeScreen() {
     printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
     printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
     printf("+---------------------------------------------+\n");
+    // make everything else green again
+    printf("\033[1;32m");
 }
 
 // function to display which level has been chosen
 int levelChooser() {
-    printf("Level code: \n");
     while (int_maker <= 501111) {
         if (int_maker == 501111) {
-            printf("%i", int_maker);
             return 1;
         }
         else if (int_maker == 500111) {
-            printf("%i", int_maker);
             return 2;
         }
         else if (int_maker == 500011) {
-            printf("%i", int_maker);
             return 3;
         }
         else if (int_maker == 500001) {
-            printf("%i", int_maker);
             return 4;
         }
     }
@@ -157,18 +158,25 @@ int levelChooser() {
 
 void life_indicator (int lives) {
     if (lives == 3) {
+        printf("\033[1;32m");
         put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
     }
     else if (lives == 2) {
+        printf("\033[1;93m");
         put_pixel(urgb_u32(0x2F, 0x2F, 0x00)); // yellow
     }
     else if (lives == 1) {
+        printf("\033[1;33m");
         put_pixel(urgb_u32(0x2F, 0xC, 0x00)); // orange
     }
     else if (lives == 0) {
+        printf("\033[1;31m");
         put_pixel(urgb_u32(0x2F, 0x00, 0x00)); // red
     }
-    else put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
+    else {
+        printf("\033[1;36m");
+        put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
+    }
 }
 
 // function play the game based on what level is chosen
@@ -183,7 +191,8 @@ void play() {
 
         while(int_maker <= morse_encoder[value] && count != 5) {
             if(int_maker == morse_encoder[value]) {
-                printf("That is correct! Good job!\n");
+                printf(" = %c\n", morse_letters[value]);
+                printf("\nThat is correct! Good job!\n");
                 count++;
                 if(count == 5){
                 level1_finished = 1;
@@ -194,7 +203,8 @@ void play() {
                 return;
             }            
         }
-        printf("That is incorrect :(\n");
+        printf(" = ?\n");
+        printf("\nThat is incorrect :(\n");
         count = 0;
         lives--;
         return;
@@ -206,7 +216,7 @@ void play() {
         
 
         if(count == 5){
-            printf("Well Done progressed To Level 2!\n");
+            printf("\nWell Done progressed To Level 2!\n");
             count = 0;
             level = 2;
         }
@@ -217,7 +227,8 @@ void play() {
 
         while(int_maker <= morse_encoder[value] && count != 5) {
             if(int_maker == morse_encoder[value]) {
-                printf("That is correct! Good job!\n");
+                printf(" = %c\n", morse_letters[value]);
+                printf("\nThat is correct! Good job!\n");
                 count++;
                 if(count == 5){
                     finished_game = 1;
@@ -228,7 +239,8 @@ void play() {
                 return;
             }            
         }
-        printf("That is incorrect :(\n");
+        printf(" = ?\n");
+        printf("\nThat is incorrect :(\n");
         count = 0;
         lives--;
         return;
@@ -247,7 +259,6 @@ void start_game() {
         play();
         // set the LED
         life_indicator(lives);
-        printf("\n%i\n", count);
     }
 
     if(lives == 0){
@@ -265,14 +276,7 @@ int main() {
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
 
-/*
-    if (watchdog_caused_reboot()) {
-            printf("Rebooted by Watchdog!\n");
-            return 0;
-        } else {
-            printf("Clean boot\n");
-        }
-*/
+    // enable watchdog
     watchdog_enable(8000000, 1);
     
     if(watchdog_caused_reboot()) {
