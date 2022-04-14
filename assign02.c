@@ -253,11 +253,6 @@ void start_game() {
     if(lives == 0){
         printf("Ran out of Lives!");
     }
-
-    if(finished_game == 1){
-        printf("Congratulations You Won!\n");
-        finished_game = 0;
-    }
 }
  
  
@@ -285,44 +280,57 @@ int main() {
     }
 
     // display the welcome screen
-    welcomeScreen();
+    while(1) {
 
-    // Initialise the PIO interface with the WS2812 code
-    PIO pio = pio0;
-    uint offset = pio_add_program(pio, &ws2812_program);
-    ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
-    put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
+        lives = 3;
+        int_maker = 5;
+        count = 0;
+        level1_finished = 0;
+        finished_game = 0;
+        level = 0;
 
-    main_asm();
+        main_asm();
+        // display the welcome screen
+        welcomeScreen();
 
-    // choosing a level
-  
-    while(level == 0) {
+        // Initialise the PIO interface with the WS2812 code
+        PIO pio = pio0;
+        uint offset = pio_add_program(pio, &ws2812_program);
+        ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
+        put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
 
-        while ((level < 1 || level > 4) && level != 100) {
-            level = levelChooser();
+        // choosing a level
+    
+        while(level == 0) {
+
+            while ((level < 1 || level > 4) && level != 100) {
+                level = levelChooser();
+            }
+
+            if(level != 100) {
+                printf("\nYou have selected Level %d.\n\n", level);
+            }
+
+            else {
+                printf("|   Enter Sequence on GP21 to choose Level    |\n");
+                printf("|                                             |\n");
+                printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
+                printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
+                printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
+                printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
+                level = 0;
+                int_maker = 5;
+            }
+            
         }
 
-        if(level != 100) {
-            printf("\nYou have selected Level %d.\n\n", level);
+        start_game();
+        if(lives == 0) {
+            printf("GAME OVER!!! Better luck next time!\n\n");
         }
-
-        else {
-            printf("|   Enter Sequence on GP21 to choose Level    |\n");
-            printf("|                                             |\n");
-            printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
-            printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
-            printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
-            printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
-            level = 0;
-            int_maker = 5;
+        if(finished_game == 1){
+            printf("Congratulations you are a master at ARM\n");
         }
-        
-    }
-
-    start_game();
-    if(lives == 0) {
-        printf("GAME OVER!!! Better luck next time!\n\n");
     }
     return 0;
 }
