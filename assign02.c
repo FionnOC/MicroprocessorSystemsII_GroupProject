@@ -97,7 +97,7 @@ int end_timer(){
     else {
         int_maker = 10*int_maker;
     }
-    //watchdog_update();
+    watchdog_update();
     return time_diff;
 }
 
@@ -179,7 +179,7 @@ void play() {
     if(level == 1 && level1_finished != 1) {
         int_maker = 5;
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
 
         while(int_maker <= morse_encoder[value] && count != 5) {
             if(int_maker == morse_encoder[value]) {
@@ -213,7 +213,7 @@ void play() {
 
       
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter %c in Morse Code\n", morse_letters[value], morsetable[value] );
+        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
 
         while(int_maker <= morse_encoder[value] && count != 5) {
             if(int_maker == morse_encoder[value]) {
@@ -249,15 +249,6 @@ void start_game() {
         life_indicator(lives);
         printf("\n%i\n", count);
     }
-
-    if(lives == 0){
-        printf("Ran out of Lives!");
-    }
-
-    if(finished_game == 1){
-        printf("Congratulations You Won!\n");
-        finished_game = 0;
-    }
 }
  
  
@@ -270,21 +261,27 @@ int main() {
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
 
-/*
     if (watchdog_caused_reboot()) {
             printf("Rebooted by Watchdog!\n");
             return 0;
         } else {
             printf("Clean boot\n");
         }
-*/
+
     watchdog_enable(8000000, 1);
-    
-    if(watchdog_caused_reboot()) {
-        printf("Rebooted by Watchdog!\n");
-    }
+
 
     // display the welcome screen
+    while(1){
+
+    lives = 3;
+    int_maker = 5;
+    count = 0;
+    level1_finished = 0;
+    finished_game = 0;
+    level = 0;
+
+    main_asm();
     welcomeScreen();
 
     // Initialise the PIO interface with the WS2812 code
@@ -293,7 +290,7 @@ int main() {
     ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
     put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
 
-    main_asm();
+    //main_asm();
 
     // choosing a level
   
@@ -322,7 +319,12 @@ int main() {
 
     start_game();
     if(lives == 0) {
-        printf("GAME OVER!!! Better luck next time!\n\n");
+        printf("GAME OVER!!! Better luck next time!\n");
     }
-    return 0;
+
+    if(finished_game == 1){
+        printf("Congratulations you are a master at ARM\n");
+    }
+
+    }
 }
