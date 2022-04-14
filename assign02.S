@@ -16,7 +16,6 @@
 
 .equ    DFLT_STRING_WORD, 0b00000000 
 
-
 .equ    DASH_TIME,      200000              
 .equ    SPACE_TIME,     1000000         @ if more than 1 second, this is a space
 .equ    SEQ_DONE,       2000000         @ if more than 2 seconds assume the sequence is done
@@ -58,13 +57,11 @@ main_asm:
     pop     {pc}
 main_loop:
     wfi                         @ wait for an interrupt
-    //b       main_loop           @ Infinite loop 
-
+    //b       main_loop         @ Infinite loop 
 
 get_time:
     ldr     r2, =TIMER_BASE
     ldr     r1, [r2, #TIMER_TIMELR_OFFSET]
-
 
 init_leds:
     push    {lr}
@@ -138,8 +135,6 @@ alrm_isr:
     ldr     r2, =string_entered
     ldr     r0, [r2]
     movs    r0, #1
-    //bl      morse_encoder
-    
 
     bl      set_alarm
     // Disable pending interrupt from TIMER by writing correct value to (TIMER_BASE + TIMER_INTR_OFFSET)
@@ -192,8 +187,6 @@ gpio_isr:
     beq     rising_edge                                         @ If it is, jump to the subroutine that handles rising-edge events
 
 falling_edge:
-    ldr     r0, =falling_edge_msg                                
-    bl      printf                                              @ Print falling-edge message   
     // GET TIME & STORE IN R5
     bl      start_timer
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
@@ -202,9 +195,6 @@ falling_edge:
     b       finish
 
 rising_edge:
-    ldr     r0, =rising_edge_msg
-    bl      printf                                              @ Print rising-edge message
-
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
     ldr     r0, =GPIO_BTN_UP_MSK                                @ Load the enable button mask into r0
     str     r0, [r2]                                            @ Push this value to the raw interrupts register to disable the pending interrupt from GPIO
@@ -221,24 +211,19 @@ dot:
     movs    r0, #0
     b       finish
 
-
 dash:
     ldr     r0, =dash_msg
     bl      printf
     movs    r0, #1 
     b       finish
 
-
 finish:
     bl set_alarm
     pop     {pc}                                                @ Exit the interrupt handler
-
 
 @ Set data alignment
 .data
     .align 4
     string_entered:     .word   DFLT_STRING_WORD 
-    falling_edge_msg:   .asciz "Button pressed.\n"
-    rising_edge_msg:    .asciz "Button released.\n"
-    dash_msg:           .asciz "-\n"
-    dot_msg:            .asciz ".\n"
+    dash_msg:           .asciz "-"
+    dot_msg:            .asciz "."
