@@ -179,12 +179,13 @@ void play(int level, int counter) {
             if(int_maker == morse_encoder[value]) {
                 printf("That is correct! Good job!\n");
                 counter++;
+                if(lives != 3){
                 lives++;
+                }
                 return;
             }
         }
         printf("That is incorrect :(\n");
-        counter = 0;
         lives--;
     }
 
@@ -202,6 +203,14 @@ void start_game(int level) {
         play(level, counter);
         // set the LED
         life_indicator(lives);
+    }
+
+    if(lives == 0){
+        printf("Ran out of Lives!");
+    }
+
+    if(counter == 5){
+        printf("Congratulations");
     }
 }
  
