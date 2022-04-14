@@ -97,7 +97,7 @@ int end_timer(){
     else {
         int_maker = 10*int_maker;
     }
-    //watchdog_update();
+    watchdog_update();
     return time_diff;
 }
 
@@ -269,7 +269,7 @@ int main() {
     // srand(time(NULL)) goes at start of main to allow for rand() to be used properly
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
-/*
+
     if (watchdog_caused_reboot()) {
             printf("Rebooted by Watchdog!\n");
             return 0;
@@ -278,7 +278,7 @@ int main() {
         }
 
     watchdog_enable(8000000, 1);
-*/
+
 
     // display the welcome screen
     welcomeScreen();

@@ -241,4 +241,3 @@ finish:
     rising_edge_msg:    .asciz "Button released.\n"
     dash_msg:           .asciz "-\n"
     dot_msg:            .asciz ".\n"
-
