@@ -37,6 +37,7 @@ char* morsetable[] = {
 int lives = 3;
 int int_maker = 5;
 
+
 // Must declare the main assembly entry point before use.
 void main_asm();
 
@@ -167,7 +168,7 @@ void life_indicator (int lives) {
 }
 
 // function play the game based on what level is chosen
-void play(int level, int counter) {
+int play(int level, int counter) {
     int value = (rand() % 36);
 
     if(level == 1) {
@@ -182,13 +183,14 @@ void play(int level, int counter) {
                 if(lives != 3){
                 lives++;
                 }
-                return;
+                return counter;
             }
         }
         printf("That is incorrect :(\n");
+        counter = 0;
         lives--;
     }
-
+ return counter;
 }
 
 // function to start the game
@@ -200,7 +202,7 @@ void start_game(int level) {
     // while lives have not run out and a 'win' (counter=5) has not been achieved
     while(lives != 0 && counter < 5) {
         // start game at the correct level
-        play(level, counter);
+        counter = play(level, counter);
         // set the LED
         life_indicator(lives);
     }
