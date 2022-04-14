@@ -24,7 +24,7 @@
 // from assignment 1
 .equ    DFLT_STATE_STRT, 1            @ Specify the value to start flashing
 .equ    DFLT_STATE_STOP, 0            @ Specify the value to stop flashing
-.equ    DFLT_ALARM_TIME, 1000000        @ Specify the default alarm timeout
+.equ    DFLT_ALARM_TIME, 3000000        @ Specify the default alarm timeout
 .equ    GPIO_BTN_EN,  21                @ Specify pin for the GP21 button
 .equ    GPIO_DIR_IN,   0                @ Specify input direction for a GPIO pin
 .equ    GPIO_DIR_OUT,  1                @ Specify output direction for a GPIO pin
@@ -139,6 +139,8 @@ alrm_isr:
     ldr     r0, [r2]
     movs    r0, #1
     //bl      morse_encoder
+
+    bl      timerHandler
     
 
     bl      set_alarm
@@ -230,7 +232,7 @@ dash:
 
 
 finish:
-    bl set_alarm
+    bl      set_alarm
     pop     {pc}                                                @ Exit the interrupt handler
 
 
