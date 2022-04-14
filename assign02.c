@@ -97,7 +97,7 @@ int end_timer(){
     else {
         int_maker = 10*int_maker;
     }
-    watchdog_update();
+    //watchdog_update();
     return time_diff;
 }
 
@@ -179,7 +179,7 @@ void play() {
     if(level == 1 && level1_finished != 1) {
         int_maker = 5;
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+        printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
 
         while(int_maker <= morse_encoder[value] && count != 5) {
             if(int_maker == morse_encoder[value]) {
@@ -213,7 +213,7 @@ void play() {
 
       
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+        printf("Enter %c in Morse Code\n", morse_letters[value], morsetable[value] );
 
         while(int_maker <= morse_encoder[value] && count != 5) {
             if(int_maker == morse_encoder[value]) {
@@ -270,15 +270,19 @@ int main() {
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
 
+/*
     if (watchdog_caused_reboot()) {
             printf("Rebooted by Watchdog!\n");
             return 0;
         } else {
             printf("Clean boot\n");
         }
-
+*/
     watchdog_enable(8000000, 1);
-
+    
+    if(watchdog_caused_reboot()) {
+        printf("Rebooted by Watchdog!\n");
+    }
 
     // display the welcome screen
     welcomeScreen();
