@@ -179,6 +179,7 @@ void play(int level, int counter) {
             if(int_maker == morse_encoder[value]) {
                 printf("That is correct! Good job!\n");
                 counter++;
+                lives++;
                 return;
             }
         }
@@ -186,6 +187,7 @@ void play(int level, int counter) {
         counter = 0;
         lives--;
     }
+
 }
 
 // function to start the game
@@ -212,18 +214,16 @@ int main() {
     // srand(time(NULL)) goes at start of main to allow for rand() to be used properly
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
-
-    /*if (watchdog_caused_reboot()) {
+/*
+    if (watchdog_caused_reboot()) {
             printf("Rebooted by Watchdog!\n");
             return 0;
         } else {
             printf("Clean boot\n");
         }
 
-    watchdog_enable(8000000, 1);*/
-    // initialise the button for falling edge and rising edge design
-    // gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_FALL, true);
-    // gpio_set_irq_enabled(21, GPIO_IRQ_EDGE_RISE, true);
+    watchdog_enable(8000000, 1);
+*/
 
     // display the welcome screen
     welcomeScreen();
@@ -239,12 +239,15 @@ int main() {
     // choosing a level
     int level = 0;
     while(level == 0) {
+
         while ((level < 1 || level > 4) && level != 100) {
             level = levelChooser();
         }
+
         if(level != 100) {
             printf("\nYou have selected Level %d.\n\n", level);
         }
+
         else {
             printf("|   Enter Sequence on GP21 to choose Level    |\n");
             printf("|                                             |\n");
@@ -253,8 +256,11 @@ int main() {
             printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
             printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
             level = 0;
+            int_maker = 5;
         }
+        
     }
+
     start_game(level);
     if(lives == 0) {
         printf("GAME OVER!!! Better luck next time!\n\n");
