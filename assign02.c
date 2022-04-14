@@ -36,6 +36,10 @@ char* morsetable[] = {
 
 int lives = 3;
 int int_maker = 5;
+int count;
+int level1_finished = 0;
+int finished_game = 0;
+int level = 0;
 
 
 // Must declare the main assembly entry point before use.
@@ -168,11 +172,11 @@ void life_indicator (int lives) {
 }
 
 // function play the game based on what level is chosen
-int count;
-void play(int level) {
+
+void play() {
     int value = (rand() % 36);
 
-    if(level == 1) {
+    if(level == 1 && level1_finished != 1) {
         int_maker = 5;
         // need to update the morse values to have the letters and binary equivs in separate arrays
         printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
@@ -181,41 +185,78 @@ void play(int level) {
             if(int_maker == morse_encoder[value]) {
                 printf("That is correct! Good job!\n");
                 count++;
-                printf("\n%i\n",count);
+                if(count == 5){
+                level1_finished = 1;
+                }
                 if(lives != 3){
                 lives++;
                 }
                 return;
-            }
+            }            
         }
         printf("That is incorrect :(\n");
         count = 0;
         lives--;
+        return;
     }
 
 
+    if(level == 2 || count == 5) {
+        int_maker = 5;
+        
+
+        if(count == 5){
+            printf("Well Done progressed To Level 2!\n");
+            count = 0;
+            level = 2;
+        }
+
+      
+        // need to update the morse values to have the letters and binary equivs in separate arrays
+        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+
+        while(int_maker <= morse_encoder[value] && count != 5) {
+            if(int_maker == morse_encoder[value]) {
+                printf("That is correct! Good job!\n");
+                count++;
+                if(count == 5){
+                    finished_game = 1;
+                }
+                if(lives != 3){
+                lives++;
+                }
+                return;
+            }            
+        }
+        printf("That is incorrect :(\n");
+        count = 0;
+        lives--;
+        return;
+    }
 }
 
 // function to start the game
-void start_game(int level) {
+void start_game() {
     // set the LED to green and initialise a counter
     put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
     count = 0;
     
     // while lives have not run out and a 'win' (counter=5) has not been achieved
-    while(lives != 0 && count < 5) {
+    while(lives != 0 && finished_game != 1) {
         // start game at the correct level
-        play(level);
+        play();
         // set the LED
         life_indicator(lives);
+        printf("\n%i\n", count);
     }
 
     if(lives == 0){
         printf("Ran out of Lives!");
     }
 
-    if(count == 5){
-        printf("Congratulations");
+    if(finished_game == 1){
+        printf("Congratulations You Won!\n");
+        finished_game = 0;
     }
 }
  
@@ -251,7 +292,7 @@ int main() {
     main_asm();
 
     // choosing a level
-    int level = 0;
+  
     while(level == 0) {
 
         while ((level < 1 || level > 4) && level != 100) {
@@ -275,7 +316,7 @@ int main() {
         
     }
 
-    start_game(level);
+    start_game();
     if(lives == 0) {
         printf("GAME OVER!!! Better luck next time!\n\n");
     }
