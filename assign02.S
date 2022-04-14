@@ -176,6 +176,7 @@ install_gpio_isr:
 gpio_isr:
     push    {lr}
     
+    bl      watchdog_update
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET)  @ Load the memory address that we want to read from to r2
     ldr     r1, [r2]                                            @ Load the interrupt status into r1
 
