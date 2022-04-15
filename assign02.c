@@ -12,17 +12,32 @@
 #define NUM_PIXELS 1        // There is 1 WS2812 device in the chain
 #define WS2812_PIN 28       // The GPIO pin that the WS2812 connected to
 
+
+/**
+ * @brief character array to store the alphabet
+ *
+ */
 char morse_letters[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                         'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
                         'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 
                         'Y', 'Z', '1', '2', '3', '4', '5', '6', 
                         '7', '8', '9', '0', '?'};
+
+/**
+ * @brief   int array which stores the alphabet in binary, 0's as dots and 1's as dashes.
+ *           a random number was placed at the beginning of each to prevent leading 0's from being a problem
+ */
 int morse_encoder[] = {501, 51000, 51010, 5100, 50, 50010, 5110, // A-G
                         50000, 500, 50111, 5101, 50100, 511, 510, // H-N
                         5111, 50110, 51101, 5010, 5000, 51, 5001, // O-U
                         50001, 5011, 51001, 51011, 51100, 501111, // V-1
                         500111, 500011, 500001, 500000, 510000, // 2-6
                         511000, 511100, 511110, 511111}; // 7-0
+
+/**
+ * @brief character array which stores the corresponding morse for each number and letter
+ * 
+ */
 char* morsetable[] = {  
     // Letters A-Z (indices 0-25)
     ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....",
@@ -34,6 +49,11 @@ char* morsetable[] = {
     "-...", "--...", "---..", "----.", "-----"
 };
 
+
+/**
+ * @brief global variables initialised here
+ *
+ */
 int lives = 3;
 int int_maker = 5;
 int count;
@@ -118,14 +138,6 @@ static inline void put_pixel(uint32_t pixel_grb) {
  * @return uint32_t 
  */
 
-/**
- * @brief 
- * 
- * @param r 
- * @param g 
- * @param b 
- * @return uint32_t 
- */
 static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
     return  ((uint32_t) (r) << 8)  |
             ((uint32_t) (g) << 16) |
@@ -408,6 +420,10 @@ void print_input_result(){
         case 511100:
             printf("8");
             break;
+
+        case 511110:
+            printf("9");
+            break;
         // operator doesn't match any case constant 
         default:
             printf("?");
@@ -416,10 +432,10 @@ void print_input_result(){
 
 }
 
-
-
-// function play the game based on what level is chosen
-
+/**
+ * @brief function to play the gam based on what level is chosen
+ * 
+ */
 void play() {
     int value = (rand() % 36);
 
@@ -496,7 +512,10 @@ void play() {
     
 }
 
-// function to start the game
+/**
+ * @brief function to start the game
+ *
+ */
 void start_game() {
     // set the LED to green and initialise a counter
     put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
@@ -517,8 +536,9 @@ void start_game() {
 
  
  
-/*
- * Main entry point for the code - simply calls the main assembly function.
+/**
+ * @brief Main entry point for the code - simply calls the main assembly function.
+ *
  */
 int main() {
     
