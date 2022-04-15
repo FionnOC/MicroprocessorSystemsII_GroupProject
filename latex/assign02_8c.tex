@@ -1,0 +1,459 @@
+\hypertarget{assign02_8c}{}\doxysection{assign02.\+c File Reference}
+\label{assign02_8c}\index{assign02.c@{assign02.c}}
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}pico/stdlib.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}hardware/gpio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}hardware/pio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}hardware/clocks.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}assign02.\+pio.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}hardware/watchdog.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{assign02_8c_a493b9b7cc0c4de9e5d832a5b9c8fe0f0}{IS\+\_\+\+RGBW}}~true
+\item 
+\#define \mbox{\hyperlink{assign02_8c_a893011783fefc21f30baf08142cd3c35}{NUM\+\_\+\+PIXELS}}~1
+\item 
+\#define \mbox{\hyperlink{assign02_8c_af75dc8bf5891f41c539ef9b8ebd3d1c3}{WS2812\+\_\+\+PIN}}~28
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{assign02_8c_a791121bfaeeeb2cec7d447d01fb82c10}{main\+\_\+asm}} ()
+\begin{DoxyCompactList}\small\item\em Must declare the main assembly entry point before use. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a2ae745b837daccfde599878d9e87f75b}{asm\+\_\+gpio\+\_\+init}} (uint pin)
+\begin{DoxyCompactList}\small\item\em Initialise a GPIO pin – see SDK for detail on gpio\+\_\+init() \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a30af7c9d96d0e068f2f24bfb182bcdf5}{asm\+\_\+gpio\+\_\+set\+\_\+dir}} (uint pin, bool out)
+\begin{DoxyCompactList}\small\item\em Set direction of a GPIO pin – see SDK for detail on gpio\+\_\+set\+\_\+dir() \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{assign02_8c_a891b0282d285011cb337f7e26a529981}{asm\+\_\+gpio\+\_\+get}} (uint pin)
+\begin{DoxyCompactList}\small\item\em Get the value of a GPIO pin – see SDK for detail on gpio\+\_\+get() \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a9f03814beac6af4dc59e52c0212d19df}{asm\+\_\+gpio\+\_\+put}} (uint pin, bool value)
+\begin{DoxyCompactList}\small\item\em Set the value of a GPIO pin – see SDK for detail on gpio\+\_\+put() \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_aa64ec553a105b1c63a4e94bef7397873}{asm\+\_\+gpio\+\_\+set\+\_\+irq}} (uint pin)
+\begin{DoxyCompactList}\small\item\em Enable falling-\/edge interrupt – see SDK for detail on gpio\+\_\+set\+\_\+irq\+\_\+enabled() \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_aaedac22c55880495505bf375e0e132c1}{start\+\_\+timer}} ()
+\begin{DoxyCompactList}\small\item\em fetches and stores the current time \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{assign02_8c_aa62c80c3e78c0fd11230e1f68aa39959}{end\+\_\+timer}} ()
+\begin{DoxyCompactList}\small\item\em calculates the difference between the rising edge and the falling edge to differentiate between a dot and dash \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a509a90fc670626a3e57214516d11f766}{alarm\+\_\+call}} ()
+\begin{DoxyCompactList}\small\item\em sets the alarm flag; tells the rest of the .c code that the alarm in the .S file has been fired \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a5cd275b9a83a98f6de9cc88a3b117454}{morse\+\_\+parser}} (int bit\+\_\+arm)
+\begin{DoxyCompactList}\small\item\em takes in a dot and dash from .S and updates current input \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a446b029885819ee47adb7e2cb2f3e547}{welcome\+Screen}} ()
+\begin{DoxyCompactList}\small\item\em print the welcome screen \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{assign02_8c_a987c14ca9e52d3b16e05486667538147}{level\+Chooser}} ()
+\begin{DoxyCompactList}\small\item\em function to display which level has been chosen \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a3f060c24eba7bdcd8b6ba7ac57ab3534}{life\+\_\+indicator}} (int \mbox{\hyperlink{assign02_8c_ac1d68ef9a5dd304c5015e07af7f2bb19}{lives}})
+\begin{DoxyCompactList}\small\item\em changes colour of the LED depending on the life count \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a9da95e579dd7bada6a936317fd936f94}{print\+\_\+input\+\_\+result}} ()
+\begin{DoxyCompactList}\small\item\em Prints the Alphanumeric Character equivalent of the morse input. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a6d58098c6cf63c241ed03bc797256bb1}{play}} ()
+\begin{DoxyCompactList}\small\item\em function to play the gam based on what level is chosen \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{assign02_8c_a671b58f5509a3a9fa692bacccfc32cc9}{start\+\_\+game}} ()
+\begin{DoxyCompactList}\small\item\em function to start the game \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{assign02_8c_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}} ()
+\begin{DoxyCompactList}\small\item\em Main entry point for the code -\/ simply calls the main assembly function. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+char \mbox{\hyperlink{assign02_8c_afb9b0d13202089f62d78c32f545c0a8b}{morse\+\_\+letters}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em character array to store the alphabet \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{assign02_8c_ab45a2bbfb210740606762ada47bb7dc4}{morse\+\_\+encoder}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em int array which stores the alphabet in binary, 0\textquotesingle{}s as dots and 1\textquotesingle{}s as dashes. a random number was placed at the beginning of each to prevent leading 0\textquotesingle{}s from being a problem \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{assign02_8c_a63586f157bc4d96c361577e4841f4fb6}{morsetable}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em character array which stores the corresponding morse for each number and letter \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{assign02_8c_ac1d68ef9a5dd304c5015e07af7f2bb19}{lives}} = 3
+\begin{DoxyCompactList}\small\item\em global variables initialised here \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{assign02_8c_a6b378529702db05703de73c9474a07ce}{int\+\_\+maker}} = 5
+\item 
+int \mbox{\hyperlink{assign02_8c_ad43c3812e6d13e0518d9f8b8f463ffcf}{count}}
+\item 
+int \mbox{\hyperlink{assign02_8c_a44f301f7a4c46be19e0b1fabbb742832}{level1\+\_\+finished}} = 0
+\item 
+int \mbox{\hyperlink{assign02_8c_a5f509e4581d7097107613b435a6fe21d}{finished\+\_\+game}} = 0
+\item 
+int \mbox{\hyperlink{assign02_8c_acf4d33ee4cff36f69b924471174dcb11}{level}} = 0
+\item 
+int \mbox{\hyperlink{assign02_8c_a90d121d262411c0f58c355daeba9c9af}{alarm\+\_\+flag}} = 0
+\item 
+int \mbox{\hyperlink{assign02_8c_aacfe2c7e744be52dc6c8ad507494bb93}{total\+\_\+lives\+\_\+lost}} = 0
+\item 
+int \mbox{\hyperlink{assign02_8c_aae85cb702ae2e115a21ca8c38dfbf902}{total\+\_\+lives\+\_\+gained}} = 0
+\item 
+absolute\+\_\+time\+\_\+t \mbox{\hyperlink{assign02_8c_ab0e0cd1f602c8fd7aeae8c9224bb2e49}{start\+\_\+time}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{assign02_8c_a493b9b7cc0c4de9e5d832a5b9c8fe0f0}\label{assign02_8c_a493b9b7cc0c4de9e5d832a5b9c8fe0f0}} 
+\index{assign02.c@{assign02.c}!IS\_RGBW@{IS\_RGBW}}
+\index{IS\_RGBW@{IS\_RGBW}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{IS\_RGBW}{IS\_RGBW}}
+{\footnotesize\ttfamily \#define IS\+\_\+\+RGBW~true}
+
+\mbox{\Hypertarget{assign02_8c_a893011783fefc21f30baf08142cd3c35}\label{assign02_8c_a893011783fefc21f30baf08142cd3c35}} 
+\index{assign02.c@{assign02.c}!NUM\_PIXELS@{NUM\_PIXELS}}
+\index{NUM\_PIXELS@{NUM\_PIXELS}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{NUM\_PIXELS}{NUM\_PIXELS}}
+{\footnotesize\ttfamily \#define NUM\+\_\+\+PIXELS~1}
+
+\mbox{\Hypertarget{assign02_8c_af75dc8bf5891f41c539ef9b8ebd3d1c3}\label{assign02_8c_af75dc8bf5891f41c539ef9b8ebd3d1c3}} 
+\index{assign02.c@{assign02.c}!WS2812\_PIN@{WS2812\_PIN}}
+\index{WS2812\_PIN@{WS2812\_PIN}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{WS2812\_PIN}{WS2812\_PIN}}
+{\footnotesize\ttfamily \#define WS2812\+\_\+\+PIN~28}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{assign02_8c_a509a90fc670626a3e57214516d11f766}\label{assign02_8c_a509a90fc670626a3e57214516d11f766}} 
+\index{assign02.c@{assign02.c}!alarm\_call@{alarm\_call}}
+\index{alarm\_call@{alarm\_call}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{alarm\_call()}{alarm\_call()}}
+{\footnotesize\ttfamily void alarm\+\_\+call (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+sets the alarm flag; tells the rest of the .c code that the alarm in the .S file has been fired 
+
+\mbox{\Hypertarget{assign02_8c_a891b0282d285011cb337f7e26a529981}\label{assign02_8c_a891b0282d285011cb337f7e26a529981}} 
+\index{assign02.c@{assign02.c}!asm\_gpio\_get@{asm\_gpio\_get}}
+\index{asm\_gpio\_get@{asm\_gpio\_get}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{asm\_gpio\_get()}{asm\_gpio\_get()}}
+{\footnotesize\ttfamily bool asm\+\_\+gpio\+\_\+get (\begin{DoxyParamCaption}\item[{uint}]{pin }\end{DoxyParamCaption})}
+
+
+
+Get the value of a GPIO pin – see SDK for detail on gpio\+\_\+get() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{assign02_8c_a2ae745b837daccfde599878d9e87f75b}\label{assign02_8c_a2ae745b837daccfde599878d9e87f75b}} 
+\index{assign02.c@{assign02.c}!asm\_gpio\_init@{asm\_gpio\_init}}
+\index{asm\_gpio\_init@{asm\_gpio\_init}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{asm\_gpio\_init()}{asm\_gpio\_init()}}
+{\footnotesize\ttfamily void asm\+\_\+gpio\+\_\+init (\begin{DoxyParamCaption}\item[{uint}]{pin }\end{DoxyParamCaption})}
+
+
+
+Initialise a GPIO pin – see SDK for detail on gpio\+\_\+init() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{assign02_8c_a9f03814beac6af4dc59e52c0212d19df}\label{assign02_8c_a9f03814beac6af4dc59e52c0212d19df}} 
+\index{assign02.c@{assign02.c}!asm\_gpio\_put@{asm\_gpio\_put}}
+\index{asm\_gpio\_put@{asm\_gpio\_put}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{asm\_gpio\_put()}{asm\_gpio\_put()}}
+{\footnotesize\ttfamily void asm\+\_\+gpio\+\_\+put (\begin{DoxyParamCaption}\item[{uint}]{pin,  }\item[{bool}]{value }\end{DoxyParamCaption})}
+
+
+
+Set the value of a GPIO pin – see SDK for detail on gpio\+\_\+put() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & \\
+\hline
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{assign02_8c_a30af7c9d96d0e068f2f24bfb182bcdf5}\label{assign02_8c_a30af7c9d96d0e068f2f24bfb182bcdf5}} 
+\index{assign02.c@{assign02.c}!asm\_gpio\_set\_dir@{asm\_gpio\_set\_dir}}
+\index{asm\_gpio\_set\_dir@{asm\_gpio\_set\_dir}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{asm\_gpio\_set\_dir()}{asm\_gpio\_set\_dir()}}
+{\footnotesize\ttfamily void asm\+\_\+gpio\+\_\+set\+\_\+dir (\begin{DoxyParamCaption}\item[{uint}]{pin,  }\item[{bool}]{out }\end{DoxyParamCaption})}
+
+
+
+Set direction of a GPIO pin – see SDK for detail on gpio\+\_\+set\+\_\+dir() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & \\
+\hline
+{\em out} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{assign02_8c_aa64ec553a105b1c63a4e94bef7397873}\label{assign02_8c_aa64ec553a105b1c63a4e94bef7397873}} 
+\index{assign02.c@{assign02.c}!asm\_gpio\_set\_irq@{asm\_gpio\_set\_irq}}
+\index{asm\_gpio\_set\_irq@{asm\_gpio\_set\_irq}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{asm\_gpio\_set\_irq()}{asm\_gpio\_set\_irq()}}
+{\footnotesize\ttfamily void asm\+\_\+gpio\+\_\+set\+\_\+irq (\begin{DoxyParamCaption}\item[{uint}]{pin }\end{DoxyParamCaption})}
+
+
+
+Enable falling-\/edge interrupt – see SDK for detail on gpio\+\_\+set\+\_\+irq\+\_\+enabled() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pin} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{assign02_8c_aa62c80c3e78c0fd11230e1f68aa39959}\label{assign02_8c_aa62c80c3e78c0fd11230e1f68aa39959}} 
+\index{assign02.c@{assign02.c}!end\_timer@{end\_timer}}
+\index{end\_timer@{end\_timer}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{end\_timer()}{end\_timer()}}
+{\footnotesize\ttfamily int end\+\_\+timer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+calculates the difference between the rising edge and the falling edge to differentiate between a dot and dash 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{assign02_8c_a987c14ca9e52d3b16e05486667538147}\label{assign02_8c_a987c14ca9e52d3b16e05486667538147}} 
+\index{assign02.c@{assign02.c}!levelChooser@{levelChooser}}
+\index{levelChooser@{levelChooser}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{levelChooser()}{levelChooser()}}
+{\footnotesize\ttfamily int level\+Chooser (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+function to display which level has been chosen 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{assign02_8c_a3f060c24eba7bdcd8b6ba7ac57ab3534}\label{assign02_8c_a3f060c24eba7bdcd8b6ba7ac57ab3534}} 
+\index{assign02.c@{assign02.c}!life\_indicator@{life\_indicator}}
+\index{life\_indicator@{life\_indicator}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{life\_indicator()}{life\_indicator()}}
+{\footnotesize\ttfamily void life\+\_\+indicator (\begin{DoxyParamCaption}\item[{int}]{lives }\end{DoxyParamCaption})}
+
+
+
+changes colour of the LED depending on the life count 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lives} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{assign02_8c_ae66f6b31b5ad750f1fe042a706a4e3d4}\label{assign02_8c_ae66f6b31b5ad750f1fe042a706a4e3d4}} 
+\index{assign02.c@{assign02.c}!main@{main}}
+\index{main@{main}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Main entry point for the code -\/ simply calls the main assembly function. 
+
+\mbox{\Hypertarget{assign02_8c_a791121bfaeeeb2cec7d447d01fb82c10}\label{assign02_8c_a791121bfaeeeb2cec7d447d01fb82c10}} 
+\index{assign02.c@{assign02.c}!main\_asm@{main\_asm}}
+\index{main\_asm@{main\_asm}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{main\_asm()}{main\_asm()}}
+{\footnotesize\ttfamily void main\+\_\+asm (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Must declare the main assembly entry point before use. 
+
+\mbox{\Hypertarget{assign02_8c_a5cd275b9a83a98f6de9cc88a3b117454}\label{assign02_8c_a5cd275b9a83a98f6de9cc88a3b117454}} 
+\index{assign02.c@{assign02.c}!morse\_parser@{morse\_parser}}
+\index{morse\_parser@{morse\_parser}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{morse\_parser()}{morse\_parser()}}
+{\footnotesize\ttfamily void morse\+\_\+parser (\begin{DoxyParamCaption}\item[{int}]{bit\+\_\+arm }\end{DoxyParamCaption})}
+
+
+
+takes in a dot and dash from .S and updates current input 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bit\+\_\+arm} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{assign02_8c_a6d58098c6cf63c241ed03bc797256bb1}\label{assign02_8c_a6d58098c6cf63c241ed03bc797256bb1}} 
+\index{assign02.c@{assign02.c}!play@{play}}
+\index{play@{play}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{play()}{play()}}
+{\footnotesize\ttfamily void play (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+function to play the gam based on what level is chosen 
+
+\mbox{\Hypertarget{assign02_8c_a9da95e579dd7bada6a936317fd936f94}\label{assign02_8c_a9da95e579dd7bada6a936317fd936f94}} 
+\index{assign02.c@{assign02.c}!print\_input\_result@{print\_input\_result}}
+\index{print\_input\_result@{print\_input\_result}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{print\_input\_result()}{print\_input\_result()}}
+{\footnotesize\ttfamily void print\+\_\+input\+\_\+result (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Prints the Alphanumeric Character equivalent of the morse input. 
+
+\mbox{\Hypertarget{assign02_8c_a671b58f5509a3a9fa692bacccfc32cc9}\label{assign02_8c_a671b58f5509a3a9fa692bacccfc32cc9}} 
+\index{assign02.c@{assign02.c}!start\_game@{start\_game}}
+\index{start\_game@{start\_game}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{start\_game()}{start\_game()}}
+{\footnotesize\ttfamily void start\+\_\+game (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+function to start the game 
+
+\mbox{\Hypertarget{assign02_8c_aaedac22c55880495505bf375e0e132c1}\label{assign02_8c_aaedac22c55880495505bf375e0e132c1}} 
+\index{assign02.c@{assign02.c}!start\_timer@{start\_timer}}
+\index{start\_timer@{start\_timer}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{start\_timer()}{start\_timer()}}
+{\footnotesize\ttfamily void start\+\_\+timer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+fetches and stores the current time 
+
+\mbox{\Hypertarget{assign02_8c_a446b029885819ee47adb7e2cb2f3e547}\label{assign02_8c_a446b029885819ee47adb7e2cb2f3e547}} 
+\index{assign02.c@{assign02.c}!welcomeScreen@{welcomeScreen}}
+\index{welcomeScreen@{welcomeScreen}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{welcomeScreen()}{welcomeScreen()}}
+{\footnotesize\ttfamily void welcome\+Screen (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+print the welcome screen 
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{assign02_8c_a90d121d262411c0f58c355daeba9c9af}\label{assign02_8c_a90d121d262411c0f58c355daeba9c9af}} 
+\index{assign02.c@{assign02.c}!alarm\_flag@{alarm\_flag}}
+\index{alarm\_flag@{alarm\_flag}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{alarm\_flag}{alarm\_flag}}
+{\footnotesize\ttfamily int alarm\+\_\+flag = 0}
+
+\mbox{\Hypertarget{assign02_8c_ad43c3812e6d13e0518d9f8b8f463ffcf}\label{assign02_8c_ad43c3812e6d13e0518d9f8b8f463ffcf}} 
+\index{assign02.c@{assign02.c}!count@{count}}
+\index{count@{count}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{count}{count}}
+{\footnotesize\ttfamily int count}
+
+\mbox{\Hypertarget{assign02_8c_a5f509e4581d7097107613b435a6fe21d}\label{assign02_8c_a5f509e4581d7097107613b435a6fe21d}} 
+\index{assign02.c@{assign02.c}!finished\_game@{finished\_game}}
+\index{finished\_game@{finished\_game}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{finished\_game}{finished\_game}}
+{\footnotesize\ttfamily int finished\+\_\+game = 0}
+
+\mbox{\Hypertarget{assign02_8c_a6b378529702db05703de73c9474a07ce}\label{assign02_8c_a6b378529702db05703de73c9474a07ce}} 
+\index{assign02.c@{assign02.c}!int\_maker@{int\_maker}}
+\index{int\_maker@{int\_maker}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{int\_maker}{int\_maker}}
+{\footnotesize\ttfamily int int\+\_\+maker = 5}
+
+\mbox{\Hypertarget{assign02_8c_acf4d33ee4cff36f69b924471174dcb11}\label{assign02_8c_acf4d33ee4cff36f69b924471174dcb11}} 
+\index{assign02.c@{assign02.c}!level@{level}}
+\index{level@{level}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{level}{level}}
+{\footnotesize\ttfamily int level = 0}
+
+\mbox{\Hypertarget{assign02_8c_a44f301f7a4c46be19e0b1fabbb742832}\label{assign02_8c_a44f301f7a4c46be19e0b1fabbb742832}} 
+\index{assign02.c@{assign02.c}!level1\_finished@{level1\_finished}}
+\index{level1\_finished@{level1\_finished}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{level1\_finished}{level1\_finished}}
+{\footnotesize\ttfamily int level1\+\_\+finished = 0}
+
+\mbox{\Hypertarget{assign02_8c_ac1d68ef9a5dd304c5015e07af7f2bb19}\label{assign02_8c_ac1d68ef9a5dd304c5015e07af7f2bb19}} 
+\index{assign02.c@{assign02.c}!lives@{lives}}
+\index{lives@{lives}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{lives}{lives}}
+{\footnotesize\ttfamily int lives = 3}
+
+
+
+global variables initialised here 
+
+\mbox{\Hypertarget{assign02_8c_ab45a2bbfb210740606762ada47bb7dc4}\label{assign02_8c_ab45a2bbfb210740606762ada47bb7dc4}} 
+\index{assign02.c@{assign02.c}!morse\_encoder@{morse\_encoder}}
+\index{morse\_encoder@{morse\_encoder}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{morse\_encoder}{morse\_encoder}}
+{\footnotesize\ttfamily int morse\+\_\+encoder\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{501, 51000, 51010, 5100, 50, 50010, 5110, }
+\DoxyCodeLine{                       50000, 500, 50111, 5101, 50100, 511, 510, }
+\DoxyCodeLine{                       5111, 50110, 51101, 5010, 5000, 51, 5001, }
+\DoxyCodeLine{                       50001, 5011, 51001, 51011, 51100, 501111, }
+\DoxyCodeLine{                       500111, 500011, 500001, 500000, 510000,   }
+\DoxyCodeLine{                       511000, 511100, 511110, 511111\}}
+
+\end{DoxyCode}
+
+
+int array which stores the alphabet in binary, 0\textquotesingle{}s as dots and 1\textquotesingle{}s as dashes. a random number was placed at the beginning of each to prevent leading 0\textquotesingle{}s from being a problem 
+
+\mbox{\Hypertarget{assign02_8c_afb9b0d13202089f62d78c32f545c0a8b}\label{assign02_8c_afb9b0d13202089f62d78c32f545c0a8b}} 
+\index{assign02.c@{assign02.c}!morse\_letters@{morse\_letters}}
+\index{morse\_letters@{morse\_letters}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{morse\_letters}{morse\_letters}}
+{\footnotesize\ttfamily char morse\+\_\+letters\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{\textcolor{charliteral}{'A'}, \textcolor{charliteral}{'B'}, \textcolor{charliteral}{'C'}, \textcolor{charliteral}{'D'}, \textcolor{charliteral}{'E'}, \textcolor{charliteral}{'F'}, \textcolor{charliteral}{'G'}, \textcolor{charliteral}{'H'},}
+\DoxyCodeLine{                        \textcolor{charliteral}{'I'}, \textcolor{charliteral}{'J'}, \textcolor{charliteral}{'K'}, \textcolor{charliteral}{'L'}, \textcolor{charliteral}{'M'}, \textcolor{charliteral}{'N'}, \textcolor{charliteral}{'O'}, \textcolor{charliteral}{'P'},}
+\DoxyCodeLine{                        \textcolor{charliteral}{'Q'}, \textcolor{charliteral}{'R'}, \textcolor{charliteral}{'S'}, \textcolor{charliteral}{'T'}, \textcolor{charliteral}{'U'}, \textcolor{charliteral}{'V'}, \textcolor{charliteral}{'W'}, \textcolor{charliteral}{'X'},}
+\DoxyCodeLine{                        \textcolor{charliteral}{'Y'}, \textcolor{charliteral}{'Z'}, \textcolor{charliteral}{'1'}, \textcolor{charliteral}{'2'}, \textcolor{charliteral}{'3'}, \textcolor{charliteral}{'4'}, \textcolor{charliteral}{'5'}, \textcolor{charliteral}{'6'},}
+\DoxyCodeLine{                        \textcolor{charliteral}{'7'}, \textcolor{charliteral}{'8'}, \textcolor{charliteral}{'9'}, \textcolor{charliteral}{'0'}, \textcolor{charliteral}{'?'}\}}
+
+\end{DoxyCode}
+
+
+character array to store the alphabet 
+
+\mbox{\Hypertarget{assign02_8c_a63586f157bc4d96c361577e4841f4fb6}\label{assign02_8c_a63586f157bc4d96c361577e4841f4fb6}} 
+\index{assign02.c@{assign02.c}!morsetable@{morsetable}}
+\index{morsetable@{morsetable}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{morsetable}{morsetable}}
+{\footnotesize\ttfamily char$\ast$ morsetable\mbox{[}$\,$\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{= \{}
+\DoxyCodeLine{    }
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}.-\/"{}}, \textcolor{stringliteral}{"{}-\/..."{}}, \textcolor{stringliteral}{"{}-\/.-\/."{}}, \textcolor{stringliteral}{"{}-\/.."{}}, \textcolor{stringliteral}{"{}."{}}, \textcolor{stringliteral}{"{}..-\/."{}}, \textcolor{stringliteral}{"{}-\/-\/."{}}, \textcolor{stringliteral}{"{}...."{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}.."{}}, \textcolor{stringliteral}{"{}.-\/-\/-\/"{}}, \textcolor{stringliteral}{"{}-\/.-\/"{}}, \textcolor{stringliteral}{"{}.-\/.."{}}, \textcolor{stringliteral}{"{}-\/-\/"{}}, \textcolor{stringliteral}{"{}-\/."{}}, \textcolor{stringliteral}{"{}-\/-\/-\/"{}}, \textcolor{stringliteral}{"{}.-\/-\/."{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}-\/-\/.-\/"{}}, \textcolor{stringliteral}{"{}.-\/."{}}, \textcolor{stringliteral}{"{}..."{}}, \textcolor{stringliteral}{"{}-\/"{}}, \textcolor{stringliteral}{"{}..-\/"{}}, \textcolor{stringliteral}{"{}...-\/"{}}, \textcolor{stringliteral}{"{}.-\/-\/"{}}, \textcolor{stringliteral}{"{}-\/..-\/"{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}-\/.-\/-\/"{}}, \textcolor{stringliteral}{"{}-\/-\/.."{}},}
+\DoxyCodeLine{    }
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}.-\/-\/-\/-\/"{}}, \textcolor{stringliteral}{"{}..-\/-\/"{}}, \textcolor{stringliteral}{"{}...-\/-\/"{}}, \textcolor{stringliteral}{"{}....-\/"{}}, \textcolor{stringliteral}{"{}...."{}},}
+\DoxyCodeLine{    \textcolor{stringliteral}{"{}-\/..."{}}, \textcolor{stringliteral}{"{}-\/-\/..."{}}, \textcolor{stringliteral}{"{}-\/-\/-\/.."{}}, \textcolor{stringliteral}{"{}-\/-\/-\/-\/."{}}, \textcolor{stringliteral}{"{}-\/-\/-\/-\/-\/"{}}\}}
+
+\end{DoxyCode}
+
+
+character array which stores the corresponding morse for each number and letter 
+
+\mbox{\Hypertarget{assign02_8c_ab0e0cd1f602c8fd7aeae8c9224bb2e49}\label{assign02_8c_ab0e0cd1f602c8fd7aeae8c9224bb2e49}} 
+\index{assign02.c@{assign02.c}!start\_time@{start\_time}}
+\index{start\_time@{start\_time}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{start\_time}{start\_time}}
+{\footnotesize\ttfamily absolute\+\_\+time\+\_\+t start\+\_\+time}
+
+\mbox{\Hypertarget{assign02_8c_aae85cb702ae2e115a21ca8c38dfbf902}\label{assign02_8c_aae85cb702ae2e115a21ca8c38dfbf902}} 
+\index{assign02.c@{assign02.c}!total\_lives\_gained@{total\_lives\_gained}}
+\index{total\_lives\_gained@{total\_lives\_gained}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{total\_lives\_gained}{total\_lives\_gained}}
+{\footnotesize\ttfamily int total\+\_\+lives\+\_\+gained = 0}
+
+\mbox{\Hypertarget{assign02_8c_aacfe2c7e744be52dc6c8ad507494bb93}\label{assign02_8c_aacfe2c7e744be52dc6c8ad507494bb93}} 
+\index{assign02.c@{assign02.c}!total\_lives\_lost@{total\_lives\_lost}}
+\index{total\_lives\_lost@{total\_lives\_lost}!assign02.c@{assign02.c}}
+\doxysubsubsection{\texorpdfstring{total\_lives\_lost}{total\_lives\_lost}}
+{\footnotesize\ttfamily int total\+\_\+lives\+\_\+lost = 0}
+
