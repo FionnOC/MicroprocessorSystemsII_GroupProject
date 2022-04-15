@@ -169,7 +169,7 @@ install_gpio_isr:
 // Service the pending interrupt from the GPIO
 gpio_isr:
     push    {lr}
-    
+    bl      watchdog_update
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET)  @ Load the memory address that we want to read from to r2
     ldr     r1, [r2]                                            @ Load the interrupt status into r1
 
@@ -223,10 +223,6 @@ finish:
     bl      set_alarm
     
     pop     {pc}                                                @ Exit the interrupt handler
-
-
-
-
 
 @ Set data alignment
 .data
