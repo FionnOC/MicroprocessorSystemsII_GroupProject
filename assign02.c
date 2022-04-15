@@ -141,6 +141,14 @@ static inline void put_pixel(uint32_t pixel_grb)
  * @return uint32_t
  */
 
+/**
+ * @brief ensures that the first 8 bits affect the red of the LED, middle 8 the green and last on blue
+ *
+ * @param r
+ * @param g
+ * @param b
+ * @return uint32_t
+ */
 static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
 {
     return ((uint32_t)(r) << 8) |
@@ -557,18 +565,16 @@ void play()
 void start_game()
 {
     // set the LED to green and initialise a counter
-    put_pixel(urgb_u32(0x00, 0x2F, 0x00)); // green
+    put_pixel(urgb_u32(0x00, 0x2F, 0x00));
     count = 0;
 
     // while lives have not run out and a 'win' (counter=5) has not been achieved
     while (lives != 0 && finished_game != 1)
     {
-        // start game at the correct level
-        play();
-        // set the LED
-        life_indicator(lives);
-        printf("Current Streak : %i\n", count);
-        alarm_flag = 0;
+        play();                                 // start game at the correct level
+        life_indicator(lives);                  // updates the RGB LED depending on lives player has
+        printf("Current Streak : %i\n", count); // displays current streak
+        alarm_flag = 0;                         // resets the alarm flag to 0
     }
 }
 
