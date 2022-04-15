@@ -463,44 +463,51 @@ void play()
 {
     int value = (rand() % 36);
 
+    // if on level 1 and player has not failed ...
     if (level == 1 && level1_finished != 1)
     {
-        int_maker = 5;
+        int_maker = 5; // 5 placed at start of each input to negate problem with leading 0's
+
         // need to update the morse values to have the letters and binary equivs in separate arrays
         printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value]);
 
+        // while inputting; while input length is less than correct length and while you are on less than 5 attempts, and the alarm flag has not been fired...
         while (int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1)
         {
 
-            sleep_us(100); // hard fault if not here
+            sleep_us(100); // hard fault if delay not here
+
+            // if input is the same as the correct morse value
             if (int_maker == morse_encoder[value])
             {
                 printf("\nYou enterd the correct sequence %c\n", morse_letters[value]);
-                count++;
-                total_lives_gained++;
-                if (count == 5)
+                count++;              // increase count by 1
+                total_lives_gained++; // increase stat on total lives earned throughout the game
+                if (count == 5)       // if count reaches 5, finished level and leave while loop
                 {
                     level1_finished = 1;
                 }
-                if (lives != 3)
+                if (lives != 3) // do not add more than 3 lives
                 {
                     lives++;
                 }
                 return;
             }
         }
+        // If incorrect...
         printf("\nThe sequence ");
-        print_input_result();
+        print_input_result(); // call on function to output letter that the user has inputted
         printf(" you entered did not match %c\n", morse_letters[value]);
-        count = 0;
-        total_lives_lost++;
-        lives--;
+        count = 0;          // reset the count
+        total_lives_lost++; // increase stat on total lives lost
+        lives--;            // decrease player lives by 1
         return;
     }
 
+    // if level 1 completed...
     if (level == 2 || count == 5)
     {
-        int_maker = 5;
+        int_maker = 5; // reset input from user
 
         if (count == 5)
         {
@@ -509,35 +516,39 @@ void play()
             level = 2;
         }
 
-        // need to update the morse values to have the letters and binary equivs in separate arrays
+        // need to update the morse values to have the letters and binary equivalents in separate arrays
         printf("Enter %c in Morse Code\n", morse_letters[value], morsetable[value]);
 
+        // level 2 code
         while (int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1)
         {
-
             sleep_us(100); // hard fault if no delay
+
+            // if input is the same as correct morse value
             if (int_maker == morse_encoder[value])
             {
                 printf("\nYou entered the correct sequence %c\n", morse_letters[value]);
-                count++;
-                total_lives_gained++;
-                if (count == 5)
+                count++;              // increase count by 1
+                total_lives_gained++; // increase stat on total lives gained throughout the game
+
+                if (count == 5) // if count reaches 5, finished level and leave while loop
                 {
                     finished_game = 1;
                 }
-                if (lives != 3)
+                if (lives != 3) // do not add more than 3 lives
                 {
                     lives++;
                 }
                 return;
             }
         }
+        // If incorrect...
         printf("\nThe sequence ");
-        print_input_result();
+        print_input_result(); // call on function to output letter that the user has inputted
         printf(" you entered did not match %c\n", morse_letters[value]);
-        total_lives_lost++;
-        count = 0;
-        lives--;
+        total_lives_lost++; // increase stat on total lives lost
+        count = 0;          // reset the count
+        lives--;            // decrease player lives by 1
         return;
     }
 }
@@ -586,6 +597,7 @@ int main()
     while (1)
     {
 
+        // initialise all the global variables
         lives = 3;
         int_maker = 5;
         count = 0;
@@ -595,8 +607,8 @@ int main()
         total_lives_lost = 0;
         total_lives_gained = 0;
 
-        main_asm();
-        welcomeScreen();
+        main_asm();      // call on the main_asm subroutine from the .S file
+        welcomeScreen(); // output the welcome screen
 
         // Initialise the PIO interface with the WS2812 code
         PIO pio = pio0;
@@ -604,10 +616,7 @@ int main()
         ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
         put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
 
-        // main_asm();
-
-        // choosing a level
-
+        // choose a level
         while (level == 0)
         {
 
@@ -638,15 +647,16 @@ int main()
             }
         }
 
-        start_game();
-        if (lives == 0)
+        start_game(); // start the game!!
+
+        if (lives == 0) // if player loses the game
         {
             printf("GAME OVER!!! Better luck next time!\n");
         }
 
-        if (finished_game == 1)
+        if (finished_game == 1) // if the player wins
         {
-            printf("Congratulations you are a master at ARM\n");
+            printf("Congratulations you are a master at Morse Code!!!\n");
         }
 
         printf("+---------------------------+\n");
