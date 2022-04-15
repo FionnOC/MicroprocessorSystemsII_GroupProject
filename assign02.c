@@ -34,7 +34,6 @@ char* morsetable[] = {
     "-...", "--...", "---..", "----.", "-----"
 };
 
-
 int lives = 3;
 int int_maker = 5;
 int count;
@@ -44,7 +43,6 @@ int level = 0;
 int alarm_flag = 0;
 int total_lives_lost = 0;
 int total_lives_gained = 0;
-
 
 
 /**
@@ -177,7 +175,7 @@ void morse_parser(int bit_arm){
         int_maker = 10 * int_maker;
     }
 
-    watchdog_update();
+    //watchdog_update();
 
 }
 
@@ -469,7 +467,7 @@ void play() {
 
       
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+        printf("Enter %c in Morse Code\n", morse_letters[value], morsetable[value] );
 
         while(int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1) {
 
@@ -528,18 +526,14 @@ int main() {
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
 
+    watchdog_enable(8300, 1);
+
     if (watchdog_caused_reboot()) {
-            printf("Rebooted by Watchdog!\n");
-            return 0;
-        } else {
-            printf("Clean boot\n");
-        }
-
-    watchdog_enable(8000000, 1);
-
+        printf("Rebooted by Watchdog!\n");
+    }
 
     // display the welcome screen
-    while(1){
+    while(1) {
 
     lives = 3;
     int_maker = 5;
