@@ -34,12 +34,14 @@ char* morsetable[] = {
     "-...", "--...", "---..", "----.", "-----"
 };
 
+
 int lives = 3;
 int int_maker = 5;
 int count;
 int level1_finished = 0;
 int finished_game = 0;
 int level = 0;
+int alarm_flag = 0;
 
 
 // Must declare the main assembly entry point before use.
@@ -89,17 +91,28 @@ void start_timer(){
 
 int end_timer(){
     int time_diff = (int) absolute_time_diff_us(start_time, get_absolute_time());
-    printf("%d\n", time_diff);
-    if (time_diff > 250000) {
+    return time_diff;
+}
+
+void alarm_call(){
+    alarm_flag = 1;
+}
+
+
+void morse_parser(int bit_arm){
+
+    if (bit_arm == 1) {
         int_maker = int_maker * 10;
         int_maker++;
     }
     else {
-        int_maker = 10*int_maker;
+        int_maker = 10 * int_maker;
     }
-    //watchdog_update();
-    return time_diff;
+
+   // watchdog_update();
+
 }
+
 
 void welcomeScreen() {
     printf("+---------------------------------------------+\n");
@@ -133,21 +146,21 @@ void welcomeScreen() {
 // function to display which level has been chosen
 int levelChooser() {
     printf("Level code: \n");
-    while (int_maker <= 501111) {
+    while (int_maker <= 501111 && alarm_flag != 1) {
         if (int_maker == 501111) {
-            printf("%i", int_maker);
+            
             return 1;
         }
         else if (int_maker == 500111) {
-            printf("%i", int_maker);
+            
             return 2;
         }
         else if (int_maker == 500011) {
-            printf("%i", int_maker);
+            
             return 3;
         }
         else if (int_maker == 500001) {
-            printf("%i", int_maker);
+
             return 4;
         }
     }
@@ -171,6 +184,160 @@ void life_indicator (int lives) {
     else put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // blue
 }
 
+
+void print_input_result(){
+
+    switch(int_maker)
+    {
+        case 501:
+            printf("A");
+            break;
+
+        case 5100:
+            printf("B");
+            break;
+
+        case 51010:
+            printf("C");
+            break;
+
+        case 50:
+            printf("D");
+            break;
+
+        case 50010:
+            printf("E");
+            break;
+
+        case 5110:
+            printf("F");
+            break;
+
+        case 50000:
+            printf("G");
+            break;
+
+        case 500:
+            printf("H");
+            break;
+
+        case 50111:
+            printf("I");
+            break;
+
+        case 5101:
+            printf("J");
+            break;
+
+        case 50100:
+            printf("K");
+            break;
+
+        case 511:
+            printf("L");
+            break;
+
+        case 510:
+            printf("M");
+            break;
+
+        case 5111:
+            printf("N");
+            break;
+
+        case 50110:
+            printf("O");
+            break;
+
+        case 51101:
+            printf("P");
+            break;
+
+        case 5010:
+            printf("Q");
+            break;
+
+        case 5000:
+            printf("R");
+            break;
+
+        case 51:
+            printf("S");
+            break;
+
+        case 5001:
+            printf("T");
+            break;
+
+        case 50001:
+            printf("U");
+            break;
+
+        case 5011:
+            printf("V");
+            break;
+
+        case 51001:
+            printf("W");
+            break;
+
+        case 51011:
+            printf("X");
+            break;
+
+        case 51100:
+            printf("Y");
+            break;
+
+        case 501111:
+            printf("Z");
+            break;
+
+        case 500111:
+            printf("0");
+            break;
+
+        case 500011:
+            printf("1");
+            break;
+
+        case 500001:
+            printf("2");
+            break;
+
+        case 500000:
+            printf("3");
+            break;
+
+        case 510000:
+            printf("4");
+            break;
+
+        case 511000:
+            printf("5");
+            break;
+
+        case 511100:
+            printf("6");
+            break;
+
+        case 511110:
+            printf("7");
+            break;
+
+        case 511111:
+            printf("8");
+            break;
+        // operator doesn't match any case constant 
+        default:
+            printf("?");
+    }
+    
+
+}
+
+
+
 // function play the game based on what level is chosen
 
 void play() {
@@ -179,11 +346,14 @@ void play() {
     if(level == 1 && level1_finished != 1) {
         int_maker = 5;
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value]);
+        
 
-        while(int_maker <= morse_encoder[value] && count != 5) {
+        while(int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1) {
+            
+            sleep_us(100);
             if(int_maker == morse_encoder[value]) {
-                printf("That is correct! Good job!\n");
+                printf("You enterd the correct sequence %c\n", morse_letters[value]);
                 count++;
                 if(count == 5){
                 level1_finished = 1;
@@ -194,7 +364,9 @@ void play() {
                 return;
             }            
         }
-        printf("That is incorrect :(\n");
+        printf("The sequence ");
+        print_input_result(); 
+        printf(" you entered did not match %c\n",morse_letters[value]);
         count = 0;
         lives--;
         return;
@@ -213,11 +385,13 @@ void play() {
 
       
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter %c in Morse Code\n", morse_letters[value], morsetable[value] );
+        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
 
-        while(int_maker <= morse_encoder[value] && count != 5) {
+        while(int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1) {
+
+            sleep_us(100);
             if(int_maker == morse_encoder[value]) {
-                printf("That is correct! Good job!\n");
+                printf("You enterd the correct sequence %c\n", morse_letters[value]);
                 count++;
                 if(count == 5){
                     finished_game = 1;
@@ -228,11 +402,14 @@ void play() {
                 return;
             }            
         }
-        printf("That is incorrect :(\n");
+        printf("The sequence ");
+        print_input_result(); 
+        printf(" you entered did not match %c\n",morse_letters[value]);
         count = 0;
         lives--;
         return;
     }
+    
 }
 
 // function to start the game
@@ -247,13 +424,12 @@ void start_game() {
         play();
         // set the LED
         life_indicator(lives);
-        printf("\n%i\n", count);
-    }
-
-    if(lives == 0){
-        printf("Ran out of Lives!");
+        alarm_flag = 0;
+       
     }
 }
+
+
  
  
 /*
@@ -264,7 +440,6 @@ int main() {
     // srand(time(NULL)) goes at start of main to allow for rand() to be used properly
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
-
 /*
     if (watchdog_caused_reboot()) {
             printf("Rebooted by Watchdog!\n");
@@ -272,65 +447,65 @@ int main() {
         } else {
             printf("Clean boot\n");
         }
-*/
+
     watchdog_enable(8000000, 1);
-    
-    if(watchdog_caused_reboot()) {
-        printf("Rebooted by Watchdog!\n");
-    }
+*/
 
     // display the welcome screen
-    while(1) {
+    while(1){
 
-        lives = 3;
-        int_maker = 5;
-        count = 0;
-        level1_finished = 0;
-        finished_game = 0;
-        level = 0;
+    lives = 3;
+    int_maker = 5;
+    count = 0;
+    level1_finished = 0;
+    finished_game = 0;
+    level = 0;
 
-        main_asm();
-        // display the welcome screen
-        welcomeScreen();
+    main_asm();
+    welcomeScreen();
 
-        // Initialise the PIO interface with the WS2812 code
-        PIO pio = pio0;
-        uint offset = pio_add_program(pio, &ws2812_program);
-        ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
-        put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
+    // Initialise the PIO interface with the WS2812 code
+    PIO pio = pio0;
+    uint offset = pio_add_program(pio, &ws2812_program);
+    ws2812_program_init(pio, 0, offset, WS2812_PIN, 800000, IS_RGBW);
+    put_pixel(urgb_u32(0x00, 0x00, 0x2F)); // Set the colour to blue
 
-        // choosing a level
-    
-        while(level == 0) {
+    //main_asm();
 
-            while ((level < 1 || level > 4) && level != 100) {
-                level = levelChooser();
-            }
+    // choosing a level
+  
+    while(level == 0) {
 
-            if(level != 100) {
-                printf("\nYou have selected Level %d.\n\n", level);
-            }
-
-            else {
-                printf("|   Enter Sequence on GP21 to choose Level    |\n");
-                printf("|                                             |\n");
-                printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
-                printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
-                printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
-                printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
-                level = 0;
-                int_maker = 5;
-            }
-            
+        while ((level < 1 || level > 4) && level != 100) {
+            level = levelChooser();
         }
 
-        start_game();
-        if(lives == 0) {
-            printf("GAME OVER!!! Better luck next time!\n\n");
+        if(level != 100) {
+            printf("\nYou have selected Level %d.\n\n", level);
         }
-        if(finished_game == 1){
-            printf("Congratulations you are a master at ARM\n");
+
+        else {
+            printf("|   Enter Sequence on GP21 to choose Level    |\n");
+            printf("|                                             |\n");
+            printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
+            printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
+
+            level = 0;
+            int_maker = 5;
+            alarm_flag = 0;
         }
+        
     }
-    return 0;
+
+
+    start_game();
+    if(lives == 0) {
+        printf("GAME OVER!!! Better luck next time!\n");
+    }
+
+    if(finished_game == 1){
+        printf("Congratulations you are a master at ARM\n");
+    }
+
+    }
 }
