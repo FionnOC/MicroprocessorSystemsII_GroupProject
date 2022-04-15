@@ -42,6 +42,8 @@ int level1_finished = 0;
 int finished_game = 0;
 int level = 0;
 int alarm_flag = 0;
+int total_lives_lost = 0;
+int total_lives_gained = 0;
 
 
 // Must declare the main assembly entry point before use.
@@ -109,7 +111,7 @@ void morse_parser(int bit_arm){
         int_maker = 10 * int_maker;
     }
 
-   // watchdog_update();
+    watchdog_update();
 
 }
 
@@ -138,8 +140,6 @@ void welcomeScreen() {
     printf("|                                             |\n");
     printf("|   "".----""  - Level #1 - CHARS (EASY)          |\n");
     printf("|   ""..---""  - Level #2 - CHARS (HARD)          |\n");
-    printf("|   ""...--""  - Level #3 - WORDS (EASY)          |\n");
-    printf("|   ""....-""  - Level #4 - WORDS (HARD)          |\n");
     printf("+---------------------------------------------+\n");
 }
 
@@ -346,15 +346,16 @@ void play() {
     if(level == 1 && level1_finished != 1) {
         int_maker = 5;
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value]);
+        printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value]);
         
 
         while(int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1) {
             
             sleep_us(100);
             if(int_maker == morse_encoder[value]) {
-                printf("You enterd the correct sequence %c\n", morse_letters[value]);
+                printf("\nYou enterd the correct sequence %c\n", morse_letters[value]);
                 count++;
+                total_lives_gained++;
                 if(count == 5){
                 level1_finished = 1;
                 }
@@ -364,10 +365,11 @@ void play() {
                 return;
             }            
         }
-        printf("The sequence ");
+        printf("\nThe sequence ");
         print_input_result(); 
         printf(" you entered did not match %c\n",morse_letters[value]);
         count = 0;
+        total_lives_lost++;
         lives--;
         return;
     }
@@ -385,14 +387,15 @@ void play() {
 
       
         // need to update the morse values to have the letters and binary equivs in separate arrays
-        printf("Enter the letter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
+        printf("Enter %c in Morse Code (Hint: %s)\n", morse_letters[value], morsetable[value] );
 
         while(int_maker <= morse_encoder[value] && count != 5 && alarm_flag != 1) {
 
             sleep_us(100);
             if(int_maker == morse_encoder[value]) {
-                printf("You enterd the correct sequence %c\n", morse_letters[value]);
+                printf("\nYou enterd the correct sequence %c\n", morse_letters[value]);
                 count++;
+                total_lives_gained++;
                 if(count == 5){
                     finished_game = 1;
                 }
@@ -402,9 +405,10 @@ void play() {
                 return;
             }            
         }
-        printf("The sequence ");
+        printf("\nThe sequence ");
         print_input_result(); 
         printf(" you entered did not match %c\n",morse_letters[value]);
+        total_lives_lost++;
         count = 0;
         lives--;
         return;
@@ -424,6 +428,7 @@ void start_game() {
         play();
         // set the LED
         life_indicator(lives);
+        printf("Current Streak : %i\n", count);
         alarm_flag = 0;
        
     }
@@ -440,7 +445,7 @@ int main() {
     // srand(time(NULL)) goes at start of main to allow for rand() to be used properly
     srand(time(NULL));
     stdio_init_all();// Initialise all basic IO
-/*
+
     if (watchdog_caused_reboot()) {
             printf("Rebooted by Watchdog!\n");
             return 0;
@@ -449,7 +454,7 @@ int main() {
         }
 
     watchdog_enable(8000000, 1);
-*/
+
 
     // display the welcome screen
     while(1){
@@ -460,6 +465,8 @@ int main() {
     level1_finished = 0;
     finished_game = 0;
     level = 0;
+    total_lives_lost = 0;
+    total_lives_gained = 0;
 
     main_asm();
     welcomeScreen();
@@ -505,7 +512,17 @@ int main() {
 
     if(finished_game == 1){
         printf("Congratulations you are a master at ARM\n");
-    }
+        }
+    
+    printf("+---------------------------+\n");
+    printf("| Total Lives Gained :  %-4i|\n", total_lives_gained);
+    printf("| Total Lives Lost :    %-4i|\n", total_lives_lost);
+    printf("| Total Attempts Made : %-4i|\n", total_lives_gained + total_lives_lost);
+    printf("| Sucess Rate :         %-4i|\n", 100*(total_lives_gained)/(total_lives_gained + total_lives_lost));
+    printf("| Level Reached :       %i   |\n", level);
+    printf("+---------------------------+\n");
+
+    sleep_ms(2);
 
     }
 }
