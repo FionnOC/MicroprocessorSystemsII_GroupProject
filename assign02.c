@@ -229,6 +229,11 @@ void welcomeScreen()
     printf("|   *     * *     * *    *  *     * *         |\n");
     printf("|   *     * ******* *     *  *****  *******   |\n");
     printf("+---------------------------------------------+\n");
+    printf("|  Please use GP21 for input on the Pi PICO!  |\n\n");
+    printf("|   Hold the button for < 0.25s for a dot,    |\n");
+    printf("|            and >0.25s for a dash            |\n\n");
+    printf("|   If no input for 3s, that will be taken    |\n");
+    printf("|           as your attempt!                  |\n\n");
     printf("|   Enter Sequence on GP21 to choose Level    |\n");
     printf("|                                             |\n");
     printf("|   "
@@ -485,7 +490,7 @@ void play()
             // if input is the same as the correct morse value
             if (int_maker == morse_encoder[value])
             {
-                printf("\nYou enterd the correct sequence %c\n", morse_letters[value]);
+                printf("\nYou entered the correct sequence %c\n", morse_letters[value]);
                 count++;              // increase count by 1
                 total_lives_gained++; // increase stat on total lives earned throughout the game
                 if (count == 5)       // if count reaches 5, finished level and leave while loop
@@ -658,7 +663,7 @@ int main()
 
         if (finished_game == 1) // if the player wins
         {
-            printf("Congratulations you are a master at Morse Code!!!\n");
+            printf("\nCongratulations you are a master at Morse Code!!!\n");
         }
 
         printf("+---------------------------+\n");
