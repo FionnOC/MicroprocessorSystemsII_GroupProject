@@ -11,14 +11,10 @@
 //
 // declare binary sequences for dot, dash and space
 //
-.equ    DOT,            0    @ let dot be 01  
-.equ    DASH,           1    @ dash is 10  
-.equ    SPACE,          2    @ space is 11
-
-.equ    DFLT_STRING_WORD, 0b00000000    @ initialises string_entered to this value
+.equ    DOT,            0    @ let dot be 0  
+.equ    DASH,           1    @ dash is 1  
 
 .equ    DASH_TIME,      200000          @ if less than this time, this is a dash
-.equ    SPACE_TIME,     1000000         @ if more than 1 second, this is a space
 .equ    SEQ_DONE,       2000000         @ if more than 2 seconds assume the sequence is done
 
 // from assignment 1
@@ -32,40 +28,21 @@
 .equ    GPIO_BTN_DN_MSK, 0x00400000     @ falling edge event on GP21
 .equ    GPIO_BTN_UP_MSK, 0x00800000     @ rising edge event on GP21 (twice the falling edge)
 
+//
 // from assignment 1
+//
 .equ    GPIO_ISR_OFFSET, 0x74         @ GPIO is int #13 (vector table entry 29)
 .equ    ALRM_ISR_OFFSET, 0x40         @ ALARM0 is int #0 (vector table entry 16)
 
-@ Entry point to the ASM portion of the program
+//
+// Entry point to the ASM portion of the program
+//
 main_asm:
     push    {lr}
-    //bl      init_leds
     bl      init_btn                                @ initialise the button
-
-    bl      get_time                                @ fetch the current 
-
     bl      install_alrm_isr                        @ method to install the alarm isr
     bl      install_gpio_isr                        @ method to install the spio isr                  
     pop     {pc}
-
-
-//
-// is this function needed
-//
-get_time:
-    ldr     r2, =TIMER_BASE
-    ldr     r1, [r2, #TIMER_TIMELR_OFFSET]
-
-/*
-init_leds:
-    push    {lr}
-    movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
-    bl      asm_gpio_init              @ Call the subroutine to initialise the GPIO pin specified by r0
-    movs    r0, #GPIO_LED_PIN          @ This value is the GPIO LED pin on the PI PICO board
-    movs    r1, #GPIO_DIR_OUT          @ We want this GPIO pin to be setup as an output pin
-    bl      asm_gpio_set_dir           @ Call the subroutine to set the GPIO pin specified by r0 to state specified by r1
-    pop     {pc}
-*/
 
 //
 // Subroutine used to initialise the PI Pico Input Button 
@@ -250,6 +227,5 @@ finish:
 @ Set data alignment
 .data
     .align 4
-    string_entered:     .word   DFLT_STRING_WORD 
     dash_msg:           .asciz "-"
     dot_msg:            .asciz "."
