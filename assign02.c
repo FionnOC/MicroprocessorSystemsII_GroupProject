@@ -60,6 +60,7 @@ int level = 0;
 int alarm_flag = 0;
 int total_lives_lost = 0;
 int total_lives_gained = 0;
+absolute_time_t start_time;
 
 /**
  * @brief Must declare the main assembly entry point before use.
@@ -147,8 +148,6 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
            (uint32_t)(b);
 }
 
-absolute_time_t start_time;
-
 /**
  * @brief fetches and stores the current time
  *
@@ -195,8 +194,6 @@ void morse_parser(int bit_arm)
     {
         int_maker = 10 * int_maker;
     }
-
-    // watchdog_update();
 }
 
 /**
@@ -582,13 +579,12 @@ void start_game()
 int main()
 {
 
-    // srand(time(NULL)) goes at start of main to allow for rand() to be used properly
     srand(time(NULL));
     stdio_init_all(); // Initialise all basic IO
 
-    watchdog_enable(8300, 1);
+    watchdog_enable(8300, 1); // initialises the watchdog timer
 
-    if (watchdog_caused_reboot())
+    if (watchdog_caused_reboot()) // if the watchdog timer is fired...
     {
         printf("Rebooted by Watchdog!\n");
     }
@@ -663,7 +659,7 @@ int main()
         printf("| Total Lives Gained :  %-4i|\n", total_lives_gained);
         printf("| Total Lives Lost :    %-4i|\n", total_lives_lost);
         printf("| Total Attempts Made : %-4i|\n", total_lives_gained + total_lives_lost);
-        printf("| Sucess Rate :         %i%%|\n", 100 * (total_lives_gained) / (total_lives_gained + total_lives_lost));
+        printf("| Sucess Rate :         %i%% |\n", 100 * (total_lives_gained) / (total_lives_gained + total_lives_lost));
         printf("| Level Reached :       %i   |\n", level);
         printf("+---------------------------+\n");
 
