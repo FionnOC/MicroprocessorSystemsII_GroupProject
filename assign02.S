@@ -10,9 +10,9 @@
 .align 4                                                        @ Specify code alignment
 
 @ declare binary sequences for dot, dash and space
-.equ    DOT,            0b01    @ let dot be 01  
-.equ    DASH,           0b10    @ dash is 10  
-.equ    SPACE,          0b11    @ space is 11
+.equ    DOT,            0    @ let dot be 01  
+.equ    DASH,           1    @ dash is 10  
+.equ    SPACE,          2    @ space is 11
 
 .equ    DFLT_STRING_WORD, 0b00000000 
 
@@ -24,7 +24,7 @@
 // from assignment 1
 .equ    DFLT_STATE_STRT, 1            @ Specify the value to start flashing
 .equ    DFLT_STATE_STOP, 0            @ Specify the value to stop flashing
-.equ    DFLT_ALARM_TIME, 1000000        @ Specify the default alarm timeout
+.equ    DFLT_ALARM_TIME, 3000000        @ Specify the default alarm timeout
 .equ    GPIO_BTN_EN,  21                @ Specify pin for the GP21 button
 .equ    GPIO_DIR_IN,   0                @ Specify input direction for a GPIO pin
 .equ    GPIO_DIR_OUT,  1                @ Specify output direction for a GPIO pin
@@ -48,18 +48,8 @@ main_asm:
     bl      init_btn                                @ initialise the button
     bl      get_time
     bl      install_alrm_isr                        @ method to install the alarm isr
-    bl      install_gpio_isr                        @ method to install the spio isr
-    ldr     r4, =DFLT_ALARM_TIME                    @ load the default alarm time into the r4 register
-    bl      set_alarm                               @ Set a new alarm
-    // Enable alarm timer interrupts using the (TIMER_BASE + TIMER_INTE_OFFSET) register
-    ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)   @ load the value of (TIMER_BASE + TIMER_INTE_OFFSET) into r2
-    movs    r1, #1                                  @ move 1 to r1
-    str     r1, [r2]                                @ store the value of r1 to the address at r2
+    bl      install_gpio_isr                        @ method to install the spio isr                  @ load the default alarm time into the r4 register
     pop     {pc}
-main_loop:
-    wfi                         @ wait for an interrupt
-    //b       main_loop           @ Infinite loop 
-
 
 get_time:
     ldr     r2, =TIMER_BASE
@@ -93,6 +83,7 @@ set_alarm:
     // Get the current timer count from (TIMER_BASE + TIMER_TIMELR_OFFSET) register
     ldr     r1, =(TIMER_BASE + TIMER_TIMELR_OFFSET)
     ldr     r2, [r1]
+    ldr     r4, =DFLT_ALARM_TIME
     movs    r1, r4
     add     r1, r1, r2
     ldr     r2, =(TIMER_BASE + TIMER_ALARM0_OFFSET)
@@ -100,6 +91,9 @@ set_alarm:
     // Add the time delay you want to wait for to the current timer count
     // Push the updated value to (TIMER_BASE + TIMER_ALARM0_OFFSET)
     // Exit subroutine
+    ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)   @ load the value of (TIMER_BASE + TIMER_INTE_OFFSET) into r2
+    movs    r1, #1                                  @ move 1 to r1
+    str     r1, [r2]   
     bx      lr
 
 // Sets up the alrm_isr in the RAM vector table and enables the correct interrupt
@@ -123,6 +117,9 @@ install_alrm_isr:
     // Exit subroutine
     bx      lr
 
+
+
+
 .thumb_func
 
 // Service the pending interrupt from the ALARM0 TIMER
@@ -135,19 +132,16 @@ alrm_isr:
     str     r0, [r1]
             
     //to pass word off to c
-    ldr     r2, =string_entered
-    ldr     r0, [r2]
-    movs    r0, #1
-    //bl      morse_encoder
-    
+    movs    r0, #2
 
-    bl      set_alarm
+    bl      alarm_call
+    
+    //bl      set_alarm
     // Disable pending interrupt from TIMER by writing correct value to (TIMER_BASE + TIMER_INTR_OFFSET)
-    ldr     r2, =(TIMER_BASE + TIMER_INTE_OFFSET)
-    movs    r1, #1
-    str     r1, [r2]
+
     // Exit ISR
     pop     {pc}                      @ Pop the link register from the stack to the program counter
+
 
 // From assignment 1: Sets up the gpio_isr in the RAM vector table and enables the correct interrupt
 install_gpio_isr:
@@ -170,13 +164,14 @@ install_gpio_isr:
     // Exit subroutine
     bx      lr
 
+
+
 .thumb_func
 
 // Service the pending interrupt from the GPIO
 gpio_isr:
     push    {lr}
     
-    bl      watchdog_update
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_PROC0_INTS2_OFFSET)  @ Load the memory address that we want to read from to r2
     ldr     r1, [r2]                                            @ Load the interrupt status into r1
 
@@ -192,8 +187,7 @@ gpio_isr:
     beq     rising_edge                                         @ If it is, jump to the subroutine that handles rising-edge events
 
 falling_edge:
-    ldr     r0, =falling_edge_msg                                
-    bl      printf                                              @ Print falling-edge message   
+ 
     // GET TIME & STORE IN R5
     bl      start_timer
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
@@ -202,15 +196,13 @@ falling_edge:
     b       finish
 
 rising_edge:
-    ldr     r0, =rising_edge_msg
-    bl      printf                                              @ Print rising-edge message
 
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
     ldr     r0, =GPIO_BTN_UP_MSK                                @ Load the enable button mask into r0
     str     r0, [r2]                                            @ Push this value to the raw interrupts register to disable the pending interrupt from GPIO
     
     bl      end_timer
-    
+
     ldr     r1, =DASH_TIME
     cmp     r0, r1
     bgt     dash
@@ -219,26 +211,28 @@ dot:
     ldr     r0, =dot_msg
     bl      printf
     movs    r0, #0
+    bl      morse_parser
     b       finish
-
 
 dash:
     ldr     r0, =dash_msg
     bl      printf
-    movs    r0, #1 
+    movs    r0, #1
+    bl      morse_parser
     b       finish
 
-
 finish:
-    bl set_alarm
+    bl      set_alarm
+    
     pop     {pc}                                                @ Exit the interrupt handler
+
+
+
 
 
 @ Set data alignment
 .data
     .align 4
     string_entered:     .word   DFLT_STRING_WORD 
-    falling_edge_msg:   .asciz "Button pressed.\n"
-    rising_edge_msg:    .asciz "Button released.\n"
-    dash_msg:           .asciz "-\n"
-    dot_msg:            .asciz ".\n"
+    dash_msg:           .asciz "-"
+    dot_msg:            .asciz "."
