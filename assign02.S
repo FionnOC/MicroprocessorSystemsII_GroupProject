@@ -177,7 +177,6 @@ gpio_isr:
 //
 falling_edge:
  
-    // GET TIME & STORE IN R5
     bl      start_timer
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
     ldr     r0, =GPIO_BTN_DN_MSK                                @ Load the enable button mask into r0
@@ -218,7 +217,9 @@ dash:
     movs    r0, #1  
     bl      morse_parser                @ pass a 1 to the .c file to show a dash has been inputted
     b       finish
-
+//
+// subroutine to reset alarm
+//
 finish:
     bl      set_alarm                   @ resets alarm as button has been pressed so input must continue
     
