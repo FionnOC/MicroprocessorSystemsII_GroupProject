@@ -8,16 +8,20 @@
 .thumb                                                          @ Specify thumb assembly for RP2040
 .global main_asm                                                @ Provide program starting address to the linker
 .align 4                                                        @ Specify code alignment
-//
-// declare binary sequences for dot, dash and space
-//
+/**
+ * @brief declare binary sequences for dot, dash and space
+ *
+ */
 .equ    DOT,            0    @ let dot be 0  
 .equ    DASH,           1    @ dash is 1  
 
 .equ    DASH_TIME,      200000          @ if less than this time, this is a dash
 .equ    SEQ_DONE,       2000000         @ if more than 2 seconds assume the sequence is done
 
-// from assignment 1
+/**
+ * @brief from assignment 1
+ *
+ */
 .equ    DFLT_STATE_STRT, 1              @ Specify the value to start flashing
 .equ    DFLT_STATE_STOP, 0              @ Specify the value to stop flashing
 .equ    DFLT_ALARM_TIME, 3000000        @ Specify the default alarm timeout
@@ -28,15 +32,17 @@
 .equ    GPIO_BTN_DN_MSK, 0x00400000     @ falling edge event on GP21
 .equ    GPIO_BTN_UP_MSK, 0x00800000     @ rising edge event on GP21 (twice the falling edge)
 
-//
-// from assignment 1
-//
+/**
+ * @brief from assignment 1
+ *
+ */
 .equ    GPIO_ISR_OFFSET, 0x74         @ GPIO is int #13 (vector table entry 29)
 .equ    ALRM_ISR_OFFSET, 0x40         @ ALARM0 is int #0 (vector table entry 16)
 
-//
-// Entry point to the ASM portion of the program
-//
+/**
+ * @brief Entry point to the ASM portion of the program
+ *
+ */
 main_asm:
     push    {lr}
     bl      init_btn                                @ initialise the button
@@ -44,9 +50,10 @@ main_asm:
     bl      install_gpio_isr                        @ method to install the spio isr                  
     pop     {pc}
 
-//
-// Subroutine used to initialise the PI Pico Input Button 
-//
+/**
+ * @brief Subroutine used to initialise the PI Pico Input Button 
+ *
+ */
 init_btn:
 
     push    {lr}                @ store the link register in the stack
@@ -61,9 +68,12 @@ init_btn:
     bl      asm_gpio_set_irq    @ enable falling-edge and rising-edge interrupts on the enable button
     pop     {pc}                @ pop the link register from the stack to the program counter
 
-//
-// Enable alarm timer interrupts and set an alarm
-//
+
+
+/**
+ * @brief Enable alarm timer interrupts and set an alarm
+ *
+ */
 set_alarm:
     // Get the current timer count from (TIMER_BASE + TIMER_TIMELR_OFFSET) register
     ldr     r1, =(TIMER_BASE + TIMER_TIMELR_OFFSET)
@@ -85,9 +95,11 @@ set_alarm:
     // Exit subroutine
     bx      lr
 
-//
-// Sets up the alrm_isr in the RAM vector table and enables the correct interrupt
-//
+
+/**
+ * @brief Sets up the alrm_isr in the RAM vector table and enables the correct interrupt
+ *
+ */
 install_alrm_isr:
     // Get the address of the RAM vector table using the (PPB_BASE + M0PLUS_VTOR_OFFSET) register
     ldr     r2, =(PPB_BASE + M0PLUS_VTOR_OFFSET)        
@@ -108,9 +120,10 @@ install_alrm_isr:
     // Exit subroutine
     bx      lr
 
-//
-// Service the pending interrupt from the ALARM0 TIMER
-//
+/**
+ * @brief Service the pending interrupt from the ALARM0 TIMER
+ *
+ */
 .thumb_func
 alrm_isr:
     // Perform required functionality (e.g. toggle the LED)
@@ -127,9 +140,10 @@ alrm_isr:
     // Exit ISR
     pop     {pc}                      @ Pop the link register from the stack to the program counter
 
-//
-// From assignment 1: Sets up the gpio_isr in the RAM vector table and enables the correct interrupt
-//
+/**
+ * @brief From assignment 1: Sets up the gpio_isr in the RAM vector table and enables the correct interrupt
+ *
+ */
 install_gpio_isr:
     // Get the address of the RAM vector table using the (PPB_BASE + M0PLUS_VTOR_OFFSET) register
     ldr     r2, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
@@ -150,9 +164,10 @@ install_gpio_isr:
     // Exit subroutine
     bx      lr
 
-//
-// Service the pending interrupt from the GPIO
-//
+/**
+ * @brief Service the pending interrupt from the GPIO
+ *
+ */
 .thumb_func
 gpio_isr:
     push    {lr}
@@ -171,10 +186,10 @@ gpio_isr:
     cmp     r1, r0                                              @ Check if this is equal to the interrupt status
     beq     rising_edge                                         @ If it is, jump to the subroutine that handles rising-edge events
 
-
-//
-// Subroutine that is called when the button is released
-//
+/**
+ * @brief Subroutine that is called when the button is released
+ *
+ */
 falling_edge:
  
     bl      start_timer
@@ -183,9 +198,10 @@ falling_edge:
     str     r0, [r2]                                            @ Push this value to the raw interrupts register to disable the pending interrupt from GPIO
     b       finish
 
-//
-// Subroutine called when the button is pressed
-//
+/**
+ * @brief Subroutine that is called when the button is pressed
+ *
+ */
 rising_edge:
 
     ldr     r2, =(IO_BANK0_BASE + IO_BANK0_INTR2_OFFSET)        @ Load the address of the raw interrupts register into r2
@@ -199,27 +215,32 @@ rising_edge:
     cmp     r0, r1
     bgt     dash                                                @ if the input time is greater than the dash time, it is a dash, if it is smaller it is a dot
 
-//
-// subroutine to handle dot input
-//
+/**
+ * @brief subroutine to handle dot input
+ *
+ */
 dot:
     ldr     r0, =dot_msg                @ prints message when dot inputted
     bl      printf                  
     movs    r0, #0
     bl      morse_parser                @ pass a 0 to the .c file to show a dot has been inputted
     b       finish
-//
-// subroutine to handle dash input
-// 
+
+/**
+ * @brief subroutine to handle dash input
+ *
+ */
 dash:
     ldr     r0, =dash_msg               @ prints message when dash inputted
     bl      printf
     movs    r0, #1  
     bl      morse_parser                @ pass a 1 to the .c file to show a dash has been inputted
     b       finish
-//
-// subroutine to reset alarm
-//
+
+/**
+ * @brief subroutine to reset alarm 
+ *
+ */
 finish:
     bl      set_alarm                   @ resets alarm as button has been pressed so input must continue
     
